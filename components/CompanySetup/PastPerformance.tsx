@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CompanyInfo } from "./CompanyInfo";
 import { ProgressBar } from "./ProgressBar";
 import { FileUploader } from "./FileUploader";
 import { NavigationButtons } from "./NavigationButtons";
 import { SetupStep } from "./types";
+import { saveToSessionStorage, getFromSessionStorage } from '@/utils/sessionStorage';
 
 interface PastPerformanceProps {
   onPrevious: () => void;
@@ -18,6 +19,13 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    const savedData = getFromSessionStorage();
+    if (savedData?.pastPerformance?.fileNames) {
+      console.log('Previously uploaded files:', savedData.pastPerformance.fileNames);
+    }
+  }, []);
 
   const handleFileSelect = (selectedFiles: File[]) => {
     setFiles([...files, ...selectedFiles]);
@@ -35,6 +43,13 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
     setIsUploading(true);
     try {
       await onUpload(files);
+      saveToSessionStorage({
+        ...getFromSessionStorage(),
+        pastPerformance: {
+          fileNames: files.map(f => f.name),
+        },
+        currentStep: 'pastPerformance'
+      });
       alert("Files uploaded successfully! Proceed to Final Steps");
     } catch (error) {
       console.error("Upload failed:", error);

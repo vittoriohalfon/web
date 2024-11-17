@@ -10,6 +10,7 @@ import { TermsCheckbox } from "./TermsCheckbox";
 import { SubmitButton } from "./SubmitButton";
 import { FormData, EditableFields, DropdownOptions } from "./types";
 import { useRouter } from "next/navigation";
+import { saveToSessionStorage, getFromSessionStorage } from '@/utils/sessionStorage';
 
 interface FormSectionProps {
   formData: FormData;
@@ -21,6 +22,24 @@ interface FormSectionProps {
 interface CompanySetupFormProps {
   onNext: () => void;
 }
+
+// Add this helper function at the top of your component or in a utils file
+const cleanContent = (content: string): string => {
+  // Remove markdown formatting
+  content = content.replace(/\*\*/g, '');
+  
+  // If content starts with "- ", remove it
+  if (content.startsWith('- ')) {
+    content = content.substring(2);
+  }
+  
+  // If it's a company name, remove the "Company Name: " prefix
+  if (content.startsWith('Company Name: ')) {
+    content = content.substring('Company Name: '.length);
+  }
+  
+  return content.trim();
+};
 
 export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) => {
   const [formData, setFormData] = useState<FormData>({
@@ -59,6 +78,15 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
 
   const router = useRouter();
 
+  // Load saved data from session storage on component mount
+  useEffect(() => {
+    const savedData = getFromSessionStorage();
+    if (savedData?.companySetup) {
+      setFormData(savedData.companySetup);
+      setEditableFields(savedData.editableFields);
+    }
+  }, []);
+
   const updateFormField = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -71,18 +99,73 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
   };
 
   const handleAutofill = async () => {
+    if (!formData.companyWebsite) {
+      console.error("Please enter a company website first");
+      return;
+    }
+
     setIsLoading(true);
     try {
+      console.log("Sending request with website:", formData.companyWebsite);
+      
       const response = await fetch("/api/autofill", {
         method: "POST",
-        body: JSON.stringify({ website: formData.companyWebsite }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ domain: formData.companyWebsite }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setFormData({ ...formData, ...data });
+      console.log("Received API response:", data);
+
+      if (!data.results) {
+        console.error("No results in API response");
+        return;
+      }
+
+      data.results.forEach((result: { fieldType: string; content: string }) => {
+        console.log("Processing result:", result);
+        
+        const fieldTypeKey = result.fieldType.split(' ')[0];
+        
+        switch (fieldTypeKey) {
+          case "Find":
+            updateEditableField("companyName", cleanContent(result.content));
+            break;
+          case "Determine":
+            updateEditableField("industrySector", result.content);
+            break;
+          case "Provide":
+            updateEditableField("companyOverview", result.content);
+            break;
+          case "BRIEFLY":
+            updateEditableField("coreProducts", result.content);
+            break;
+          case "Identify":
+            if (result.fieldType.includes("Unique")) {
+              updateEditableField("uniqueSellingPoint", result.content);
+            } else if (result.fieldType.includes("target")) {
+              updateEditableField("demographic", result.content);
+            }
+            break;
+          case "Investigate":
+            updateEditableField("geographic", result.content);
+            break;
+          default:
+            console.log("Unhandled field type key:", fieldTypeKey, "Full type:", result.fieldType);
+        }
+      });
+
     } catch (error) {
       console.error("Autofill failed:", error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleFormFieldUpdate = (field: string, value: string | boolean) => {
@@ -104,9 +187,20 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
   };
 
   const handleNext = () => {
+    // Save current form state to session storage
+    saveToSessionStorage({
+      companySetup: formData,
+      editableFields: editableFields,
+      currentStep: 'companySetup'
+    });
     window.scrollTo(0, 0);
     onNext();
   };
+
+  useEffect(() => {
+    console.log("Form data updated:", formData);
+    console.log("Editable fields updated:", editableFields);
+  }, [formData, editableFields]);
 
   return (
     <div className="overflow-hidden bg-white">
@@ -132,6 +226,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
                 <AutoFillButton
                   onClick={handleAutofill}
                   isLoading={isLoading}
+                  disabled={!formData.companyWebsite}
                 />
                 <TextAreaField
                   label="Industry Sector"

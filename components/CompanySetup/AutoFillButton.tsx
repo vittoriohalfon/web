@@ -3,17 +3,23 @@ import React from "react";
 interface AutoFillButtonProps {
   onClick: () => void;
   isLoading: boolean;
+  disabled?: boolean;
 }
 
 export const AutoFillButton: React.FC<AutoFillButtonProps> = ({
   onClick,
   isLoading,
+  disabled,
 }) => {
   return (
     <button
-      className="flex gap-2 justify-center items-center self-end px-4 py-2.5 mt-4 text-base text-center text-indigo-700 whitespace-nowrap rounded-lg border border-indigo-700 border-solid cursor-pointer"
+      className={`flex gap-2 justify-center items-center self-end px-4 py-2.5 mt-4 text-base text-center whitespace-nowrap rounded-lg border border-solid cursor-pointer ${
+        disabled || isLoading
+          ? "text-gray-400 border-gray-400 cursor-not-allowed"
+          : "text-indigo-700 border-indigo-700"
+      }`}
       onClick={onClick}
-      disabled={isLoading}
+      disabled={disabled || isLoading}
       aria-busy={isLoading}
     >
       <span className="self-stretch my-auto">
