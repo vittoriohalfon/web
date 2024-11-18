@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { CountryItem } from "./CountryItem";
 
 interface Country {
@@ -13,137 +14,137 @@ const countries: Country[] = [
   {
     name: "France",
     code: "FR",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/bf8d64f9d62611dbd1335e6efcc698b3398adf7b47fee8eec835a0f6e898f275?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/france.svg",
   },
   {
     name: "Ireland",
     code: "IE",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/ireland.svg",
   },
   {
     name: "Germany",
     code: "DE",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/germany.svg",
   },
   {
     name: "Italy",
     code: "IT",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/italy.svg",
   },
   {
     name: "Spain",
     code: "ES",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/spain.svg",
   },
   {
     name: "Netherlands",
     code: "NL",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/netherlands.svg",
   },
   {
     name: "Belgium",
     code: "BE",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/belgium.svg",
   },
   {
     name: "Poland",
     code: "PL",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/poland.svg",
   },
   {
     name: "Portugal",
     code: "PT",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/portugal.svg",
   },
   {
     name: "Romania",
     code: "RO",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/romania.svg",
   },
   {
     name: "Austria",
     code: "AT",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/austria.svg",
   },
   {
     name: "Sweden",
     code: "SE",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/sweden.svg",
   },
   {
     name: "Finland",
     code: "FI",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/finland.svg",
   },
   {
     name: "Denmark",
     code: "DK",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/denmark.svg",
   },
   {
     name: "Czech Republic",
     code: "CZ",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/czech-republic.svg",
   },
   {
     name: "Greece",
     code: "GR",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/greece.svg",
   },
   {
     name: "Bulgaria",
     code: "BG",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/bulgaria.svg",
   },
   {
     name: "Croatia",
     code: "HR",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/croatia.svg",
   },
   {
     name: "Slovakia",
     code: "SK",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/slovakia.svg",
   },
   {
     name: "Lithuania",
     code: "LT",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/lithuania.svg",
   },
   {
     name: "Latvia",
     code: "LV",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/latvia.svg",
   },
   {
     name: "Estonia",
     code: "EE",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/estonia.svg",
   },
   {
     name: "Cyprus",
     code: "CY",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/cyprus.svg",
   },
   {
     name: "Hungary",
     code: "HU",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/hungary.svg",
   },
   {
     name: "Slovenia",
     code: "SI",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/slovenia.svg",
   },
   {
     name: "Luxembourg",
     code: "LU",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/luxembourg.svg",
   },
   {
     name: "Malta",
     code: "MT",
-    flag: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/edf94a7a974b0958ef40d4f590f34b0c6604dcbc56711c0b7d826b88b63be81c?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    flag: "/flags/malta.svg",
   },
 ];
 
@@ -195,12 +196,22 @@ export const CountryFilter: React.FC = () => {
                     key={country.code}
                     className="flex gap-2 items-center self-stretch px-2 py-1 my-auto rounded border border-solid border-zinc-300 min-h-[26px]"
                   >
-                    <img
-                      loading="lazy"
-                      src={country.flag}
-                      alt={`${country.name} flag`}
-                      className="object-contain shrink-0 self-stretch my-auto aspect-[1.29] w-[18px]"
-                    />
+                    {country.flag?.startsWith('/') ? (
+                      <Image
+                        src={country.flag}
+                        alt={`${country.name} flag`}
+                        width={18}
+                        height={14}
+                        className="object-contain"
+                      />
+                    ) : (
+                      <img
+                        loading="lazy"
+                        src={country.flag}
+                        alt={`${country.name} flag`}
+                        className="object-contain shrink-0 self-stretch my-auto aspect-[1.29] w-[18px]"
+                      />
+                    )}
                     <div className="self-stretch my-auto">{country.name}</div>
                   </div>
                 ) : null;

@@ -12,8 +12,7 @@ const tenders = [
     match: 75,
     budget: "€8.500.000",
     country: "Ireland",
-    countryFlag:
-      "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4e55468037310f885246665e638fc03e8db59cf5651e972548d7d0c7356ae44f?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    countryFlag: "/flags/ireland.svg",
     lots: 4,
     status: "Open",
     posted: "November 7th, 2024",
@@ -27,8 +26,7 @@ const tenders = [
     match: 55,
     budget: "€400.000",
     country: "France",
-    countryFlag:
-      "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/c9f68ed78bfe0ff2b1958a95ee6f7eec6e3f7fe729d9f40df861f6291cdce4fa?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    countryFlag: "/flags/france.svg",
     lots: 3,
     status: "Open",
     posted: "November 7th, 2024",
@@ -42,8 +40,7 @@ const tenders = [
     match: 85,
     budget: "€1.125.000",
     country: "Luxembourg",
-    countryFlag:
-      "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/e4e4af0264a8303c36634b2e2c402cbd5d0633ff7280c2d1737232d9c28cb064?apiKey=27ce83af570848e9b22665bc31a03bc0&",
+    countryFlag: "/flags/luxembourg.svg",
     lots: 2,
     status: "Open",
     posted: "November 8th, 2024",

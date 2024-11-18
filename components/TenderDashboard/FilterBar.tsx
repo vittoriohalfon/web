@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { FilterDropdown } from "./FilterDropdown";
 import { CountryFilter } from "./CountryFilter";
-import { DateRangePicker } from "./DateRangePicker/DateRangePicker";
+import { DatePicker } from "./DatePicker/DatePicker";
 
 const priceRanges = [
   "140,000 - 500,000",
@@ -15,29 +15,23 @@ const priceRanges = [
 export const FilterBar: React.FC = () => {
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<{
-    startDate: Date | null;
-    endDate: Date | null;
-  }>({
-    startDate: null,
-    endDate: null,
-  });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const handleDateRangeChange = (startDate: Date | null, endDate: Date | null) => {
-    setDateRange({ startDate, endDate });
+  const handleDateSelect = (date: Date | null) => {
+    setSelectedDate(date);
     setIsDatePickerOpen(false);
   };
 
-  const formatDateRange = () => {
-    if (!dateRange.startDate || !dateRange.endDate) {
-      return "Select dates";
+  const formatDate = () => {
+    if (!selectedDate) {
+      return "Deadline Date - After:";
     }
-    return `${dateRange.startDate.toLocaleDateString()} - ${dateRange.endDate.toLocaleDateString()}`;
+    return selectedDate.toLocaleDateString();
   };
 
   const handleClearAll = () => {
     setSelectedPrice(null);
-    setDateRange({ startDate: null, endDate: null });
+    setSelectedDate(null);
     // Add other clear actions as needed
   };
 
@@ -55,7 +49,7 @@ export const FilterBar: React.FC = () => {
           className="cursor-pointer"
         >
           <FilterDropdown 
-            label={formatDateRange()} 
+            label={formatDate()} 
             options={[]}
           />
         </div>
@@ -79,7 +73,7 @@ export const FilterBar: React.FC = () => {
             className="fixed inset-0 bg-black bg-opacity-50 z-[999]"
             onClick={() => setIsDatePickerOpen(false)}
           />
-          <DateRangePicker onDateRangeChange={handleDateRangeChange} />
+          <DatePicker onDateSelect={handleDateSelect} />
         </>
       )}
     </div>
