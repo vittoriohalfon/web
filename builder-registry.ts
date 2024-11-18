@@ -1,10 +1,15 @@
 "use client";
 import { builder, Builder } from "@builder.io/react";
+import { AchievementGoal } from "./components/CompanySetup/AchievementGoal";
 import { AutoFillButton } from "./components/CompanySetup/AutoFillButton";
 import { CheckboxField } from "./components/CompanySetup/CheckboxField";
 import { CompanyInfo } from "./components/CompanySetup/CompanyInfo";
 import { CompanySetupForm } from "./components/CompanySetup/CompanySetupForm";
+import { CountryFilter } from "./components/TenderDashboard/CountryFilter";
+import { CountryItem } from "./components/TenderDashboard/CountryItem";
 import { FileUploader } from "./components/CompanySetup/FileUploader";
+import { FilterBar } from "./components/TenderDashboard/FilterBar";
+import { FilterDropdown } from "./components/TenderDashboard/FilterDropdown";
 import { FormSection } from "./components/CompanySetup/FormSection";
 import { InputField } from "./components/CompanySetup/InputField";
 import { NavigationButtons } from "./components/CompanySetup/NavigationButtons";
@@ -13,6 +18,8 @@ import { ProgressBar } from "./components/CompanySetup/ProgressBar";
 import { ProgressIndicator } from "./components/CompanySetup/ProgressIndicator";
 import { SelectField } from "./components/CompanySetup/SelectField";
 import { SubmitButton } from "./components/CompanySetup/SubmitButton";
+import { TenderCard } from "./components/TenderDashboard/TenderCard";
+import { TenderDashboard } from "./components/TenderDashboard/TenderDashboard";
 import { TermsCheckbox } from "./components/CompanySetup/TermsCheckbox";
 import { TextAreaField } from "./components/CompanySetup/TextAreaField";
 
@@ -228,4 +235,161 @@ Builder.registerComponent(ProgressBar, {
       required: true,
     },
   ],
+});
+
+Builder.registerComponent(AchievementGoal, {
+  name: "AchievementGoal",
+  inputs: [
+    {
+      name: "initialGoal",
+      type: "string",
+    },
+  ],
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(FilterBar, {
+  name: "FilterBar",
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(FilterBar, {
+  name: "FilterBar",
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(FilterBar, {
+  name: "FilterBar",
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(FilterBar, {
+  name: "FilterBar",
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(FilterDropdown, {
+  name: "FilterDropdown",
+  inputs: [
+    {
+      name: "label",
+      type: "string",
+      required: true,
+    },
+  ],
+});
+
+Builder.registerComponent(TenderDashboard, {
+  name: "TenderDashboard",
+});
+
+Builder.registerComponent(TenderDashboard, {
+  name: "TenderDashboard",
+});
+
+Builder.registerComponent(FilterDropdown, {
+  name: "FilterDropdown",
+  inputs: [
+    {
+      name: "label",
+      type: "string",
+      required: true,
+    },
+  ],
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(CountryItem, {
+  name: "CountryItem",
+  inputs: [
+    {
+      name: "country",
+      type: "string",
+      required: true,
+    },
+    {
+      name: "flag",
+      type: "string",
+    },
+    {
+      name: "isSelected",
+      type: "boolean",
+      required: true,
+    },
+  ],
+});
+
+Builder.registerComponent(CountryFilter, {
+  name: "CountryFilter",
+});
+
+Builder.registerComponent(FilterBar, {
+  name: "FilterBar",
+});
+
+Builder.registerComponent(FilterDropdown, {
+  name: "FilterDropdown",
+  inputs: [
+    {
+      name: "label",
+      type: "string",
+      required: true,
+    },
+  ],
+});
+
+Builder.registerComponent(FilterDropdown, {
+  name: "FilterDropdown",
+  inputs: [
+    {
+      name: "label",
+      type: "string",
+      required: true,
+    },
+  ],
+});
+
+Builder.registerComponent(TenderDashboard, {
+  name: "TenderDashboard",
+});
+
+Builder.registerComponent(TenderCard, {
+  name: "TenderCard",
+  inputs: [
+    {
+      name: "tender",
+      type: "object",
+      hideFromUI: true,
+      meta: {
+        ts: "{ title: string; description: string; match: number; budget: string; country: string; countryFlag: string; lots: number; status: string; posted: string; submissionDate: string; dueIn: string; }",
+      },
+      required: true,
+    },
+  ],
+});
+
+Builder.registerComponent(TenderDashboard, {
+  name: "TenderDashboard",
 });
