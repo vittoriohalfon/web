@@ -11,6 +11,7 @@ interface DatePickerProps {
 
 export const DatePicker: React.FC<DatePickerProps> = ({ onDateSelect }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
@@ -22,6 +23,18 @@ export const DatePicker: React.FC<DatePickerProps> = ({ onDateSelect }) => {
     onDateSelect(null);
   };
 
+  const handleMonthChange = (offset: number, calendarIndex: number) => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(currentDate.getMonth() + offset);
+    setCurrentDate(newDate);
+  };
+
+  // Calculate the months to display (current month and next month)
+  const firstMonth = currentDate.getMonth();
+  const firstYear = currentDate.getFullYear();
+  const secondMonth = (firstMonth + 1) % 12;
+  const secondYear = firstMonth === 11 ? firstYear + 1 : firstYear;
+
   return (
     <div
       className="flex fixed top-2/4 left-2/4 items-start bg-white rounded-lg border border-solid shadow-xl -translate-x-2/4 -translate-y-2/4 border-zinc-100 z-[1000]"
@@ -31,22 +44,26 @@ export const DatePicker: React.FC<DatePickerProps> = ({ onDateSelect }) => {
       <div className="flex flex-col w-[656px] max-md:max-w-full">
         <div className="flex flex-wrap items-start max-md:max-w-full">
           <CalendarMonth
-            month={10}
-            year={2024}
+            month={firstMonth}
+            year={firstYear}
             onDateClick={handleDateClick}
             selectedDate={selectedDate}
+            onMonthChange={handleMonthChange}
+            isFirstCalendar={true}
           />
           <CalendarMonth
-            month={11}
-            year={2024}
+            month={secondMonth}
+            year={secondYear}
             onDateClick={handleDateClick}
             selectedDate={selectedDate}
+            onMonthChange={handleMonthChange}
+            isFirstCalendar={false}
           />
         </div>
         <DatePickerFooter
           selectedDate={selectedDate}
           onClear={clearDate}
-          onApply={() => {}}
+          onApply={() => onDateSelect(selectedDate)}
         />
       </div>
     </div>

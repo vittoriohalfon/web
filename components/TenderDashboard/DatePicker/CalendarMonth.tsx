@@ -10,6 +10,8 @@ interface CalendarMonthProps {
   year: number;
   onDateClick: (date: Date) => void;
   selectedDate: Date | null;
+  onMonthChange: (offset: number, calendarIndex: number) => void;
+  isFirstCalendar: boolean;
 }
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = ({
@@ -17,6 +19,8 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
   year,
   onDateClick,
   selectedDate,
+  onMonthChange,
+  isFirstCalendar,
 }) => {
   const monthName = new Date(year, month).toLocaleString("default", {
     month: "long",
@@ -26,7 +30,14 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
     <div className="flex overflow-hidden flex-col border-r border-solid border-r-zinc-300 min-w-[240px] w-[328px]">
       <div className="flex flex-col justify-center px-6 py-5 w-full max-md:px-5">
         <div className="flex flex-col w-full">
-          <CalendarHeader monthName={monthName} year={year} />
+          <CalendarHeader 
+            monthName={monthName} 
+            year={year}
+            onPrevMonth={() => onMonthChange(-1, isFirstCalendar ? 0 : 1)}
+            onNextMonth={() => onMonthChange(1, isFirstCalendar ? 0 : 1)}
+            showPrevButton={isFirstCalendar}
+            showNextButton={!isFirstCalendar}
+          />
           <CalendarDays
             month={month}
             year={year}
