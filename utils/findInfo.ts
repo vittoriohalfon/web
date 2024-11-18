@@ -1,11 +1,3 @@
-import { config } from 'dotenv';
-import { resolve } from 'path';
-
-// Initialize environment variables if running directly
-if (typeof window === 'undefined') {
-  config({ path: resolve(process.cwd(), '.env.local') });
-}
-
 // API Constants
 const PERPLEXITY_API_URL = 'https://api.perplexity.ai/chat/completions';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
