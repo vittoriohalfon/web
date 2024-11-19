@@ -1,5 +1,4 @@
 export { TenderDashboard } from "./TenderDashboard";
-export { Sidebar } from "./Sidebar";
 export { NavItem } from "./NavItem";
 export { TrialBanner } from "./TrialBanner";
 export { SearchBar } from "./SearchBar";
@@ -8,3 +7,4 @@ export { FilterDropdown } from "./FilterDropdown";
 export { CountryFilter } from "./CountryFilter";
 export { TenderList } from "./TenderList";
 export { TenderCard } from "./TenderCard";
+export { Sidebar } from "../shared/Sidebar";

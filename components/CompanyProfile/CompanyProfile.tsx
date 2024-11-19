@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { ProfileForm } from "./ProfileForm";
 import { Header } from "./Header";
-import { Sidebar } from "./Sidebar";
+import { Sidebar } from "../shared/Sidebar";
 
 interface CompanyProfileProps {
   // Add any props if needed
