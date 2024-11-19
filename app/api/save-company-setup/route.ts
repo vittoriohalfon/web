@@ -62,7 +62,12 @@ export async function POST(req: Request) {
       });
     }
 
-    return new Response('Success', { status: 200 });
+    return new Response(JSON.stringify({ companyId: company.id }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
     console.error('Error in company setup:', error);
     return new Response('Internal Server Error', { status: 500 });

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 interface FileUploaderProps {
   onFileSelect: (files: File[]) => void;
@@ -9,13 +9,15 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   onFileSelect,
   onGoogleDriveSelect,
 }) => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      onFileSelect(Array.from(event.target.files));
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const files = Array.from(event.target.files);
+      
+      // Call the parent handler with the selected files
+      onFileSelect(files);
+      
+      // Clear the input value to allow selecting the same file again
+      event.target.value = '';
     }
   };
 
@@ -25,7 +27,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         <div
           role="button"
           tabIndex={0}
-          className="flex flex-1 shrink gap-2 justify-center items-center self-stretch px-2 py-6 my-auto rounded-lg basis-0 bg-neutral-100 min-w-[240px]"
+          className="flex flex-1 shrink gap-2 justify-center items-center self-stretch px-2 py-6 my-auto rounded-lg basis-0 bg-neutral-100 min-w-[240px] hover:bg-neutral-200 transition-colors cursor-pointer"
           onClick={() => document.getElementById("fileInput")?.click()}
           onKeyPress={(event) => {
             if (event.key === "Enter" || event.key === " ") {
@@ -39,6 +41,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             className="hidden"
             multiple
             onChange={handleFileChange}
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
             aria-label="Choose files to upload"
           />
           <img
@@ -51,7 +54,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         <div
           role="button"
           tabIndex={0}
-          className="flex flex-1 shrink gap-2 justify-center items-center self-stretch px-2 py-6 my-auto rounded-lg basis-0 bg-neutral-100 min-w-[240px]"
+          className="flex flex-1 shrink gap-2 justify-center items-center self-stretch px-2 py-6 my-auto rounded-lg basis-0 bg-neutral-100 min-w-[240px] hover:bg-neutral-200 transition-colors cursor-pointer"
           onClick={onGoogleDriveSelect}
           onKeyPress={(event) => {
             if (event.key === "Enter" || event.key === " ") {

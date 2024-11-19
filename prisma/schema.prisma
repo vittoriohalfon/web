@@ -39,10 +39,13 @@ model Company {
 }
 
 model PastPerformance {
-  id        Int     @id @default(autoincrement())
-  company   Company @relation(fields: [companyId], references: [id])
-  companyId Int
-  fileUrl   String
+  id          Int      @id @default(autoincrement())
+  company     Company  @relation(fields: [companyId], references: [id])
+  companyId   Int
+  fileUrl     String
+  size        Int
+  uploadedAt  DateTime @default(now())
+  contentType String?
 }
 
 model UserPreference {

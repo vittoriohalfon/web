@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.693.0",
+    "@aws-sdk/client-s3": "^3.693.0",
     "@aws-sdk/lib-dynamodb": "^3.693.0",
+    "@aws-sdk/s3-request-presigner": "^3.693.0",
     "@builder.io/dev-tools": "^1.1.36",
     "@builder.io/react": "^6.0.4",
     "@builder.io/sdk": "^4.0.3",

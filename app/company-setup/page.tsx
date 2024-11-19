@@ -45,6 +45,20 @@ export default function OnboardingPage() {
     router.push('/dashboard');
   };
 
+  const handleFileUpload = async (files: File[]) => {
+    try {
+      // Here you would typically upload the files to your server
+      // For now, we'll just simulate a successful upload
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // After successful upload, move to next step
+      handleNext();
+    } catch (error) {
+      console.error('File upload failed:', error);
+      alert('Failed to upload files. Please try again.');
+    }
+  };
+
   return (
     <div>
       {currentStep === SetupStep.CompanySetup && (
@@ -54,10 +68,7 @@ export default function OnboardingPage() {
         <PastPerformance
           onPrevious={handlePrevious}
           onSkip={handleNext}
-          onUpload={async (files) => {
-            // Handle file upload
-            handleNext();
-          }}
+          onUpload={handleFileUpload}
         />
       )}
       {currentStep === SetupStep.FinalSteps && (

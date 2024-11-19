@@ -5,6 +5,7 @@ import { FileUploader } from "./FileUploader";
 import { NavigationButtons } from "./NavigationButtons";
 import { SetupStep } from "./types";
 import { saveToSessionStorage, getFromSessionStorage } from '@/utils/sessionStorage';
+import { DocumentItem } from './DocumentItem';
 
 interface PastPerformanceProps {
   onPrevious: () => void;
@@ -22,13 +23,27 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
 
   useEffect(() => {
     const savedData = getFromSessionStorage();
-    if (savedData?.pastPerformance?.fileNames) {
-      console.log('Previously uploaded files:', savedData.pastPerformance.fileNames);
+    if (savedData?.pastPerformance?.files) {
+      console.log('Found saved files:', savedData.pastPerformance.files);
     }
   }, []);
 
   const handleFileSelect = (selectedFiles: File[]) => {
-    setFiles([...files, ...selectedFiles]);
+    const newFiles = [...files, ...selectedFiles];
+    setFiles(newFiles);
+
+    const existingData = getFromSessionStorage() || {};
+    saveToSessionStorage({
+      ...existingData,
+      pastPerformance: {
+        ...existingData.pastPerformance,
+        files: newFiles.map(file => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        }))
+      }
+    });
   };
 
   const handleGoogleDriveSelect = () => {
@@ -43,19 +58,54 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
     setIsUploading(true);
     try {
       await onUpload(files);
+      
+      const existingData = getFromSessionStorage() || {};
       saveToSessionStorage({
-        ...getFromSessionStorage(),
+        ...existingData,
         pastPerformance: {
-          fileNames: files.map(f => f.name),
+          ...existingData.pastPerformance,
+          uploadedFiles: files.map(f => ({
+            name: f.name,
+            size: f.size,
+            type: f.type,
+          })),
+          uploadComplete: true
         },
         currentStep: 'pastPerformance'
       });
-      alert("Files uploaded successfully! Proceed to Final Steps");
+      
     } catch (error) {
       console.error("Upload failed:", error);
+      alert("Failed to upload files. Please try again.");
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const handleDeleteFile = (indexToDelete: number) => {
+    const newFiles = files.filter((_, index) => index !== indexToDelete);
+    setFiles(newFiles);
+    
+    const existingData = getFromSessionStorage() || {};
+    saveToSessionStorage({
+      ...existingData,
+      pastPerformance: {
+        ...existingData.pastPerformance,
+        files: newFiles.map(file => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        }))
+      }
+    });
   };
 
   return (
@@ -72,14 +122,31 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
                 </h1>
                 <p className="mt-2 text-base leading-5 text-zinc-600 max-md:max-w-full">
                   Upload files showcasing your company's capabilities and past
-                  work to help Skim find new opportunities. Don't have them?
-                  Skim AI can guide you through the proposal process with ease.
+                  work to help Skim find new opportunities. 
+                  Upload files showcasing your capabilities, financial documentation, 
+                  insurance, and compliance certifications (e.g., ISO 9001) to 
+                  streamline and strengthen your tender applications. 
+                  Don't have them? Skim can walk you through the process
                 </p>
               </div>
               <FileUploader
                 onFileSelect={handleFileSelect}
                 onGoogleDriveSelect={handleGoogleDriveSelect}
               />
+              
+              {files.length > 0 && (
+                <div className="flex flex-col gap-4 mt-8 w-full">
+                  {files.map((file, index) => (
+                    <DocumentItem
+                      key={`${file.name}-${index}`}
+                      fileName={file.name}
+                      fileSize={formatFileSize(file.size)}
+                      onDelete={() => handleDeleteFile(index)}
+                      onView={() => window.open(URL.createObjectURL(file), '_blank')}
+                    />
+                  ))}
+                </div>
+              )}
             </section>
             <NavigationButtons
               onPrevious={onPrevious}

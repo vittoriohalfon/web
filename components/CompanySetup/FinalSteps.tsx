@@ -62,28 +62,44 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
       // Get all saved data
       const allData = getFromSessionStorage();
       
-      // Prepare final data object
-      const finalData = {
-        companySetup: allData?.companySetup,
-        editableFields: allData?.editableFields,
-        pastPerformance: allData?.pastPerformance,
-        finalSteps: {
-          industry: selectedIndustry,
-          goal: selectedGoal
-        }
-      };
-
-      // Send to your API endpoint
-      const response = await fetch('/api/company-setup', {
+      // First save company setup data
+      const response = await fetch('/api/save-company-setup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(finalData),
+        body: JSON.stringify({
+          companySetup: allData?.companySetup,
+          editableFields: allData?.editableFields,
+          finalSteps: {
+            industry: selectedIndustry,
+            goal: selectedGoal
+          }
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to save company setup data');
+      }
+
+      const { companyId } = await response.json();
+
+      // If there are files, upload them
+      if (allData?.pastPerformance?.files?.length > 0) {
+        const uploadResponse = await fetch('/api/upload-files', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            files: allData.pastPerformance.files,
+            companyId
+          }),
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload files');
+        }
       }
 
       // Clear session storage after successful submission

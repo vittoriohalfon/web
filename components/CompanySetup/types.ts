@@ -27,4 +27,11 @@ export enum SetupStep {
   CompanySetup = 1,
   PastPerformance = 2,
   FinalSteps = 3
+}
+
+export interface DocumentItemProps {
+  fileName: string;
+  fileSize: string;
+  onDelete?: () => void;
+  onView?: () => void;
 } 
