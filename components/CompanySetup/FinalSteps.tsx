@@ -4,6 +4,8 @@ import { ProgressBar } from "./ProgressBar";
 import { SetupStep } from "./types";
 import { NavigationButtons } from "./NavigationButtons";
 import { saveToSessionStorage, getFromSessionStorage, clearSessionStorage } from '@/utils/sessionStorage';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 interface FinalStepsProps {
   onPrevious: () => void;
@@ -14,6 +16,9 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
   onPrevious,
   onComplete,
 }) => {
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -48,15 +53,20 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
   }, []);
 
   const handleComplete = async () => {
+    if (!isLoaded || !user) {
+      console.error('User not loaded');
+      return;
+    }
+
     try {
       // Get all saved data
       const allData = getFromSessionStorage();
       
       // Prepare final data object
       const finalData = {
-        companySetup: allData.companySetup,
-        editableFields: allData.editableFields,
-        pastPerformance: allData.pastPerformance,
+        companySetup: allData?.companySetup,
+        editableFields: allData?.editableFields,
+        pastPerformance: allData?.pastPerformance,
         finalSteps: {
           industry: selectedIndustry,
           goal: selectedGoal
@@ -79,8 +89,9 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
       // Clear session storage after successful submission
       clearSessionStorage();
       
-      // Call the completion handler
+      // Call the completion handler and redirect to dashboard
       onComplete();
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error saving company setup:', error);
       alert('Failed to save company setup. Please try again.');

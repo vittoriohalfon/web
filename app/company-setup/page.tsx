@@ -1,13 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CompanySetupForm } from '@/components/CompanySetup/CompanySetupForm';
 import { PastPerformance } from '@/components/CompanySetup/PastPerformance';
 import { FinalSteps } from '@/components/CompanySetup/FinalSteps';
 import { SetupStep } from '@/components/CompanySetup/types';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 export default function OnboardingPage() {
+  const { isLoaded, isSignedIn, user } = useUser();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<SetupStep>(SetupStep.CompanySetup);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push('/sign-in');
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  // Show loading state or nothing while checking auth
+  if (!isLoaded || !isSignedIn) {
+    return null;
+  }
 
   const handleNext = () => {
     if (currentStep === SetupStep.CompanySetup) {
@@ -26,8 +42,7 @@ export default function OnboardingPage() {
   };
 
   const handleComplete = () => {
-    // Handle completion - e.g., redirect to dashboard
-    console.log('Setup completed');
+    router.push('/dashboard');
   };
 
   return (
