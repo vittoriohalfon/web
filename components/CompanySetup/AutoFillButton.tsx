@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface AutoFillButtonProps {
   onClick: () => void;
@@ -11,6 +11,22 @@ export const AutoFillButton: React.FC<AutoFillButtonProps> = ({
   isLoading,
   disabled,
 }) => {
+  const [loadingText, setLoadingText] = useState("Loading.");
+
+  useEffect(() => {
+    if (isLoading) {
+      const interval = setInterval(() => {
+        setLoadingText((current) => {
+          if (current === "Loading.") return "Loading..";
+          if (current === "Loading..") return "Loading...";
+          return "Loading.";
+        });
+      }, 300); // Changes every 500ms
+
+      return () => clearInterval(interval);
+    }
+  }, [isLoading]);
+
   return (
     <button
       className={`flex gap-2 justify-center items-center self-end px-4 py-2.5 mt-4 text-base text-center whitespace-nowrap rounded-lg border border-solid cursor-pointer ${
@@ -23,7 +39,7 @@ export const AutoFillButton: React.FC<AutoFillButtonProps> = ({
       aria-busy={isLoading}
     >
       <span className="self-stretch my-auto">
-        {isLoading ? "Loading..." : "AutoFill"}
+        {isLoading ? loadingText : "AutoFill"}
       </span>
       {!isLoading && (
         <img

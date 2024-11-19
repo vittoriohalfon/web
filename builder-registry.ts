@@ -17,6 +17,8 @@ import { PastPerformance } from "./components/CompanySetup/PastPerformance";
 import { ProgressBar } from "./components/CompanySetup/ProgressBar";
 import { ProgressIndicator } from "./components/CompanySetup/ProgressIndicator";
 import { SelectField } from "./components/CompanySetup/SelectField";
+import { Sidebar } from "./components/TenderDashboard/Sidebar";
+import { Sidebar } from "./components/TenderDashboard";
 import { SubmitButton } from "./components/CompanySetup/SubmitButton";
 import { TenderCard } from "./components/TenderDashboard/TenderCard";
 import { TenderDashboard } from "./components/TenderDashboard/TenderDashboard";
@@ -392,4 +394,12 @@ Builder.registerComponent(TenderCard, {
 
 Builder.registerComponent(TenderDashboard, {
   name: "TenderDashboard",
+});
+
+Builder.registerComponent(Sidebar, {
+  name: "Sidebar",
+});
+
+Builder.registerComponent(Sidebar, {
+  name: "Sidebar",
 });

@@ -88,8 +88,8 @@ async function sendPromptToPerplexity(
 
 // Updated function to structure response using OpenAI with retry logic
 async function structureWithOpenAI(
-  perplexityResponse: string, 
-  fieldType: string, 
+  perplexityResponse: string,
+  fieldType: string,
   retryCount = 0
 ): Promise<string> {
   try {
@@ -101,19 +101,19 @@ async function structureWithOpenAI(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: "gpt-4",
+          model: "gpt-4o",
           messages: [
             {
               role: "system",
-              content: `You are a text cleaning assistant. Your task is to clean and format the input text for a company profile app. 
-              
+              content: `You are a text cleaning assistant. Your task is to clean and format the input text for a company profile app.
 Rules:
 - Remove any introductory phrases like "Here is..." or "Based on..."
+- Do not add the titles for the sections / fields. DO NOT start off with Industry/Sector: or anything like that. The titles are already provided in the web app.
 - Remove any trailing descriptions or explanations
 - Remove any meta-commentary about the data
 - Keep only factual, relevant information
 - Be concise but complete
-- Do not add any type ofcommentary or additional context`
+- Do not add any type of commentary or additional context`
             },
             {
               role: "user",
