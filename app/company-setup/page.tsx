@@ -12,6 +12,31 @@ export default function OnboardingPage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<SetupStep>(SetupStep.CompanySetup);
+  const [isChecking, setIsChecking] = useState(true);
+
+  // Check if user has already set up company
+  useEffect(() => {
+    const checkCompanySetup = async () => {
+      if (!user) return;
+      
+      try {
+        const response = await fetch(`/api/check-company-setup?userId=${user.id}`);
+        const data = await response.json();
+        
+        if (data.hasCompany) {
+          router.push('/dashboard');
+        }
+      } catch (error) {
+        console.error('Error checking company setup:', error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    if (isLoaded && isSignedIn) {
+      checkCompanySetup();
+    }
+  }, [isLoaded, isSignedIn, user, router]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -20,8 +45,8 @@ export default function OnboardingPage() {
     }
   }, [isLoaded, isSignedIn, router]);
 
-  // Show loading state or nothing while checking auth
-  if (!isLoaded || !isSignedIn) {
+  // Show loading state while checking auth and company status
+  if (!isLoaded || !isSignedIn || isChecking) {
     return null;
   }
 

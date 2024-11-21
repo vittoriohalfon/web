@@ -21,7 +21,12 @@ export async function GET() {
       return new NextResponse("Company not found", { status: 404 });
     }
 
-    return NextResponse.json(user.company);
+    const responseData = {
+      ...user.company,
+      userCreatedAt: user.createdAt
+    };
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error fetching company profile:", error);
     return new NextResponse("Internal Server Error", { status: 500 });

@@ -6,14 +6,14 @@ import { Sidebar } from "../shared/Sidebar";
 import { SearchBar } from "./SearchBar";
 import { FilterBar } from "./FilterBar";
 import { TenderList } from "./TenderList";
-import { TrialBanner } from "./TrialBanner";
+import { Header } from "../shared/Header";
 
 export const TenderDashboard: React.FC = () => {
   return (
     <div className="flex overflow-hidden bg-white">
       <Sidebar />
       <main className="flex flex-col flex-1 ml-[312px] min-w-[240px] max-md:max-w-full">
-        <TrialBanner />
+        <Header userCreatedAt={new Date()} />
         <section className="flex flex-col justify-center p-6 w-full bg-white border-t border-b border-solid border-y-zinc-300 max-md:px-5 max-md:max-w-full">
           <SearchBar />
           <FilterBar />
