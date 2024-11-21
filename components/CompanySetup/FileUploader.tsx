@@ -13,8 +13,26 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     if (event.target.files && event.target.files.length > 0) {
       const files = Array.from(event.target.files);
       
-      // Call the parent handler with the selected files
-      onFileSelect(files);
+      // Convert files to the required format with base64 content
+      const processedFiles = await Promise.all(
+        files.map(async (file) => {
+          return new Promise<File>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              // Add the base64 content to the file object
+              const fileWithContent = Object.assign(file, {
+                content: reader.result
+              });
+              resolve(fileWithContent as File);
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+          });
+        })
+      );
+      
+      // Call the parent handler with the processed files
+      onFileSelect(processedFiles);
       
       // Clear the input value to allow selecting the same file again
       event.target.value = '';

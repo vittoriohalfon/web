@@ -28,22 +28,41 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
     }
   }, []);
 
-  const handleFileSelect = (selectedFiles: File[]) => {
-    const newFiles = [...files, ...selectedFiles];
-    setFiles(newFiles);
+  const handleFileSelect = async (files: File[]) => {
+    try {
+      // Convert files to the required format with base64 content
+      const processedFiles = await Promise.all(
+        files.map(async (file) => {
+          return new Promise<any>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              resolve({
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                content: reader.result
+              });
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+          });
+        })
+      );
 
-    const existingData = getFromSessionStorage() || {};
-    saveToSessionStorage({
-      ...existingData,
-      pastPerformance: {
-        ...existingData.pastPerformance,
-        files: newFiles.map(file => ({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-        }))
-      }
-    });
+      // Save to session storage
+      saveToSessionStorage({
+        ...getFromSessionStorage(),
+        pastPerformance: {
+          files: processedFiles
+        },
+        currentStep: SetupStep.PastPerformance
+      });
+
+      setFiles(files); // For UI display purposes
+    } catch (error) {
+      console.error('Error processing files:', error);
+      alert('Error processing files. Please try again.');
+    }
   };
 
   const handleGoogleDriveSelect = () => {

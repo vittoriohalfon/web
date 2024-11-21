@@ -59,59 +59,125 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
     }
 
     try {
-      // Get all saved data
       const allData = getFromSessionStorage();
+      console.log('Retrieved data from session storage:', allData);
+
+      if (!allData?.companySetup?.companyName) {
+        throw new Error('Company name is required');
+      }
+
+      const submitData = {
+        companySetup: allData?.companySetup,
+        editableFields: allData?.editableFields,
+        finalSteps: {
+          industry: selectedIndustry,
+          goal: selectedGoal
+        },
+        pastPerformance: allData?.pastPerformance
+      };
+
+      console.log('Submitting company setup data:', submitData);
       
-      // First save company setup data
       const response = await fetch('/api/save-company-setup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          companySetup: allData?.companySetup,
-          editableFields: allData?.editableFields,
-          finalSteps: {
-            industry: selectedIndustry,
-            goal: selectedGoal
-          }
-        }),
+        body: JSON.stringify(submitData),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to save company setup data');
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (e) {
+        console.error('Failed to parse response:', e);
+        throw new Error('Invalid server response');
       }
 
-      const { companyId } = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          responseData?.message || 
+          responseData?.error || 
+          `Failed to save company setup (${response.status})`
+        );
+      }
 
-      // If there are files, upload them
+      const companyId = responseData.companyId;
+      if (!companyId) {
+        throw new Error('No company ID returned from server');
+      }
+
+      console.log('Company created with ID:', companyId);
+
+      // Handle file uploads, if present
       if (allData?.pastPerformance?.files?.length > 0) {
-        const uploadResponse = await fetch('/api/upload-files', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            files: allData.pastPerformance.files,
-            companyId
-          }),
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload files');
+        try {
+          await handleFileUploads(allData.pastPerformance.files, companyId);
+        } catch (error) {
+          console.error('Error uploading files:', error);
+          alert('Company setup was saved, but there was an error uploading files. Please try uploading files again later.');
         }
       }
 
       // Clear session storage after successful submission
       clearSessionStorage();
+      console.log('Session storage cleared');
       
       // Call the completion handler and redirect to dashboard
       onComplete();
       router.push('/dashboard');
+
     } catch (error) {
       console.error('Error saving company setup:', error);
-      alert('Failed to save company setup. Please try again.');
+      alert(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to save company setup. Please try again.'
+      );
     }
+  };
+
+  const handleFileUploads = async (files: any[], companyId: number) => {
+    console.log('Preparing files for upload:', files.length);
+    
+    if (!Array.isArray(files)) {
+      console.error('Files is not an array:', files);
+      throw new Error('Invalid files data');
+    }
+
+    // Verify each file has the required data
+    const filesData = files.map(file => {
+      if (!file.content) {
+        console.error('File missing content:', file);
+        throw new Error(`File ${file.name} is missing required content`);
+      }
+      
+      return {
+        name: file.name,
+        content: file.content,
+        size: file.size,
+        type: file.type
+      };
+    });
+
+    console.log('Uploading files to server...');
+    const uploadResponse = await fetch('/api/upload-files', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        files: filesData,
+        companyId
+      }),
+    });
+
+    if (!uploadResponse.ok) {
+      const errorText = await uploadResponse.text();
+      throw new Error(`Failed to upload files: ${errorText}`);
+    }
+    
+    console.log('Files uploaded successfully');
   };
 
   // Save current step data when navigating away

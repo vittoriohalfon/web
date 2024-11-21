@@ -54,16 +54,40 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
   const [dropdownOptions] = useState<DropdownOptions>({
     turnover: ["Less than €1M", "€1M - €5M", "€5M - €10M", "€10M+"],
     locations: [
-      "Europe",
-      "North America",
-      "Asia",
-      "Africa",
-      "South America",
-      "Oceania",
-    ],
+      "Austria",
+      "Belgium",
+      "Bulgaria",
+      "Croatia",
+      "Cyprus",
+      "Czech Republic",
+      "Denmark",
+      "Estonia",
+      "Finland",
+      "France",
+      "Germany",
+      "Greece",
+      "Hungary",
+      "Ireland",
+      "Italy",
+      "Latvia",
+      "Lithuania",
+      "Luxembourg",
+      "Malta",
+      "Netherlands",
+      "Poland",
+      "Portugal",
+      "Romania",
+      "Slovakia",
+      "Slovenia",
+      "Spain",
+      "Sweden",
+      "Other (please specify)"
+    ]
+
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [customLocation, setCustomLocation] = useState<string>("");
 
   const [editableFields, setEditableFields] = useState<EditableFields>({
     companyName: "",

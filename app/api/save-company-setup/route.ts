@@ -1,75 +1,88 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
+    // Authenticate user
     const clerkUser = await currentUser();
     if (!clerkUser) {
-      return new Response('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Parse request body
     const data = await req.json();
-    
-    // Find or create user
-    let user = await prisma.user.findUnique({
+    if (!data) {
+      return NextResponse.json({ error: 'No data provided' }, { status: 400 });
+    }
+
+    // Destructure data with default values
+    const {
+      companySetup: {
+        companyName = '',
+        companyWebsite = null,
+        annualTurnover = null,
+        primaryLocation = null,
+        hasTenderExperience = false,
+      } = {},
+      editableFields: {
+        industrySector = null,
+        companyOverview = null,
+        coreProducts = null,
+        demographic = null,
+        uniqueSellingPoint = null,
+        geographic = null,
+      } = {},
+      finalSteps: { goal = null } = {},
+    } = data;
+
+    // Upsert user
+    const user = await prisma.user.upsert({
       where: { clerkId: clerkUser.id },
+      update: {},
+      create: {
+        clerkId: clerkUser.id,
+        email: clerkUser.emailAddresses[0]?.emailAddress || '',
+        name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim(),
+      },
     });
 
-    if (!user) {
-      // Create user if they don't exist
-      user = await prisma.user.create({
+    // Create company
+    const company = await prisma.company.create({
+      data: {
+        userId: user.id,
+        name: companyName,
+        website: companyWebsite,
+        annualTurnover,
+        primaryLocation,
+        experienceWithTenders: Boolean(hasTenderExperience),
+        industrySector,
+        companyOverview,
+        coreProductsServices: coreProducts,
+        demographic,
+        uniqueSellingPoint,
+        geographicFocus: geographic,
+      },
+    });
+
+    // Create user preference if goal is provided
+    if (goal) {
+      await prisma.userPreference.create({
         data: {
-          clerkId: clerkUser.id,
-          email: clerkUser.emailAddresses[0].emailAddress,
-          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim(),
+          userId: user.id,
+          goal,
         },
       });
     }
 
-    // Create company and user preferences
-    const company = await prisma.company.create({
-      data: {
-        userId: user.id,
-        name: data.companySetup.companyName,
-        website: data.companySetup.companyWebsite,
-        annualTurnover: data.companySetup.annualTurnover,
-        primaryLocation: data.companySetup.primaryLocation,
-        experienceWithTenders: data.companySetup.hasTenderExperience,
-        industrySector: data.finalSteps.industry,
-        companyOverview: data.editableFields?.companyOverview,
-        coreProductsServices: data.editableFields?.coreProducts,
-        demographic: data.editableFields?.demographic,
-        uniqueSellingPoint: data.editableFields?.uniqueSellingPoint,
-        geographicFocus: data.editableFields?.geographic,
-      },
-    });
+    // Respond with the created company ID
+    return NextResponse.json({ companyId: company.id }, { status: 200 });
 
-    // Create user preferences
-    await prisma.userPreference.create({
-      data: {
-        userId: user.id,
-        goal: data.finalSteps.goal,
-      },
-    });
-
-    // If there are past performances, create them
-    if (data.pastPerformance?.files?.length > 0) {
-      await prisma.pastPerformance.createMany({
-        data: data.pastPerformance.files.map((file: string) => ({
-          companyId: company.id,
-          fileUrl: file,
-        })),
-      });
-    }
-
-    return new Response(JSON.stringify({ companyId: company.id }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
   } catch (error) {
-    console.error('Error in company setup:', error);
-    return new Response('Internal Server Error', { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    return NextResponse.json(
+      { error: 'Internal Server Error', message: errorMessage },
+      { status: 500 }
+    );
   }
-} 
+}
