@@ -101,6 +101,8 @@ export const TenderList: React.FC = () => {
         }
 
         const data = await response.json();
+
+        console.log("Raw JSON from API:", data);
         setTenders(data.contracts || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load tenders');

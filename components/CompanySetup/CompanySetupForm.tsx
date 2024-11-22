@@ -74,6 +74,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
       "Luxembourg",
       "Malta",
       "Netherlands",
+      "Norway",
       "Poland",
       "Portugal",
       "Romania",

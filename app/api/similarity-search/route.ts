@@ -149,6 +149,7 @@ export async function POST(request: Request) {
       description: contract.description,
       amount: contract.estimated_value,
       currency: contract.currency,
+      country: contract.country,
       status: determineStatus(contract.estimated_value),
       match_percentage: calculateMatchPercentage(),
       published: contract.published,
