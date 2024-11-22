@@ -20,6 +20,7 @@ interface SearchResult {
   };
   deadline: string;
   published: string;
+  lot_count: number;
 }
 
 interface ParsedContract {
@@ -151,6 +152,7 @@ export async function POST(request: Request) {
       status: determineStatus(contract.estimated_value),
       match_percentage: calculateMatchPercentage(),
       published: contract.published,
+      lot_count: contract.lot_count,
       deadline: contract.deadline,
       buyer: contract.buyer
     }));

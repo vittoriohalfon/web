@@ -29,6 +29,7 @@ interface ContractDetailsResponse {
   country: string;
   deadline: string;
   published: string;
+  lot_count: number;
 }
 
 export async function POST(request: Request) {
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
     const placeholders = uniqueNoticeIds.map((_, i) => `$${i + 1}`).join(',');
     
     const query = `
-      SELECT DISTINCT
+      SELECT
         bn.notice_id,
         bn.title,
         bn.description,
@@ -70,11 +71,22 @@ export async function POST(request: Request) {
         cn.estimated_total_value as estimated_value,
         cn.currency_code as currency,
         cn.submission_deadline_date as deadline,
-        rl.country_code as country
+        rl.country_code as country,
+        COUNT(l.lot_id) AS lot_count
       FROM base_notices bn
       JOIN contract_notices cn ON bn.notice_id = cn.notice_id
       LEFT JOIN realized_locations rl ON bn.notice_id = rl.notice_id
+      LEFT JOIN lots l ON bn.notice_id = l.notice_id
       WHERE bn.notice_id IN (${placeholders})
+      GROUP BY
+        bn.notice_id,
+        bn.title,
+        bn.description,
+        bn.issue_date,
+        cn.estimated_total_value,
+        cn.currency_code,
+        cn.submission_deadline_date,
+        rl.country_code
     `;
 
     // Log the query and parameters for debugging
@@ -94,7 +106,8 @@ export async function POST(request: Request) {
       currency: row.currency,
       country: row.country,
       deadline: row.deadline?.toISOString(),
-      published: row.published?.toISOString()
+      published: row.published?.toISOString(),
+      lot_count: row.lot_count ? parseInt(row.lot_count, 10) : 1
     }));
 
     return NextResponse.json({ contracts: contractDetails });

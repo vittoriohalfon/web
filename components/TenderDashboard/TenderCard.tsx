@@ -42,7 +42,7 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
       </div>
       <div className="flex flex-wrap gap-6 w-full max-md:max-w-full">
         <div className="flex flex-col grow shrink min-w-[240px] w-[763px] max-md:max-w-full">
-          <p className="text-lg leading-7 text-neutral-950 max-md:max-w-full">
+          <p className="text-lg leading-7 text-neutral-950 max-md:max-w-full line-clamp-3">
             {tender.description}
           </p>
           <div className="flex flex-wrap flex-1 gap-10 items-center mt-4 whitespace-nowrap size-full max-md:max-w-full">
