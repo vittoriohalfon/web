@@ -134,10 +134,10 @@ export const CompanyProfile: React.FC = () => {
   }
 
   return (
-    <main className="flex overflow-hidden flex-wrap items-start p-0 m-0 w-screen min-h-screen">
+    <div className="flex overflow-hidden bg-white">
       <Sidebar />
-      <div className="flex flex-col flex-1 shrink ml-80 basis-8 min-w-[240px] max-md:ml-60 max-md:max-w-full">
-        <Header userCreatedAt={new Date(userCreatedAt || new Date())} />
+      <main className="flex flex-col flex-1 ml-[312px] min-w-[240px] max-md:max-w-full">
+        <Header userCreatedAt={new Date()} showNav={true} />
         <section className="flex flex-col p-6 w-full max-md:px-5 max-md:max-w-full">
           {error && (
             <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg">
@@ -152,7 +152,7 @@ export const CompanyProfile: React.FC = () => {
             onUpdateProfile={updateProfile}
           />
         </section>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 };

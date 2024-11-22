@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   userCreatedAt: Date;
+  showNav?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ userCreatedAt }) => {
+export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }) => {
   const TRIAL_PERIOD_DAYS = 14;
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -83,16 +83,18 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt }) => {
           </button>
         </div>
       )}
-      <nav className="flex flex-col gap-4 justify-center items-start px-6 py-4 w-full text-sm font-medium bg-white max-md:px-5 max-md:max-w-full">
-        <div className="flex gap-4 items-center max-md:max-w-full">
-          <button className="self-stretch px-4 py-2 my-auto text-white bg-indigo-700 rounded-lg w-[221px]">
-            Company Profile
-          </button>
-          <button className="self-stretch px-4 py-2 my-auto whitespace-nowrap rounded-lg text-stone-500 w-[221px]">
-            Files
-          </button>
-        </div>
-      </nav>
+      {showNav && (
+        <nav className="flex flex-col gap-4 justify-center items-start px-6 py-4 w-full text-sm font-medium bg-white max-md:px-5 max-md:max-w-full">
+          <div className="flex gap-4 items-center max-md:max-w-full">
+            <button className="self-stretch px-4 py-2 my-auto text-white bg-indigo-700 rounded-lg w-[221px]">
+              Company Profile
+            </button>
+            <button className="self-stretch px-4 py-2 my-auto whitespace-nowrap rounded-lg text-stone-500 w-[221px]">
+              Files
+            </button>
+          </div>
+        </nav>
+      )}
     </header>
   );
 };

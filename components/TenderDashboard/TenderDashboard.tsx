@@ -13,7 +13,7 @@ export const TenderDashboard: React.FC = () => {
     <div className="flex overflow-hidden bg-white">
       <Sidebar />
       <main className="flex flex-col flex-1 ml-[312px] min-w-[240px] max-md:max-w-full">
-        <Header userCreatedAt={new Date()} />
+        <Header userCreatedAt={new Date()} showNav={false} />
         <section className="flex flex-col justify-center p-6 w-full bg-white border-t border-b border-solid border-y-zinc-300 max-md:px-5 max-md:max-w-full">
           <SearchBar />
           <FilterBar />
