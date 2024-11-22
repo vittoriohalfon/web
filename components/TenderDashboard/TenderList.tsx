@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { TenderCard } from "./TenderCard";
+import { TenderCardSkeleton } from "./TenderCardSkeleton";
 import { useAuth } from "@clerk/nextjs";
 
 interface Tender {
@@ -112,7 +113,13 @@ export const TenderList: React.FC = () => {
   }, [getToken]);
 
   if (loading) {
-    return <div className="p-6 text-black">Loading tenders...</div>;
+    return (
+      <div className="flex flex-col gap-4 p-6 w-full max-md:px-5 max-md:max-w-full">
+        {[1, 2, 3].map((index) => (
+          <TenderCardSkeleton key={index} />
+        ))}
+      </div>
+    );
   }
 
   if (error) {

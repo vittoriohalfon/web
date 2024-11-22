@@ -8,3 +8,4 @@ export { TenderList } from "./TenderList";
 export { TenderCard } from "./TenderCard";
 export { Sidebar } from "../shared/Sidebar";
 export { Header } from "../shared/Header";
+export * from './TenderCardSkeleton';
