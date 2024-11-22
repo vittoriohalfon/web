@@ -85,12 +85,18 @@ async function searchContracts(user: { company: Company | null }) {
 
 async function fetchContractDetails(records: ParsedContract[], headers: Headers) {
   try {
+    // Get the authorization header from the incoming request
+    const authHeader = headers.get('Authorization');
+    
+    if (!authHeader) {
+      throw new Error('No authorization header present');
+    }
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/contract-details`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: headers.get('Authorization') || '',
-        'clerk-session-token': headers.get('clerk-session-token') || '',
+        'Authorization': authHeader,
       },
       body: JSON.stringify({ contracts: records }),
     });
@@ -114,6 +120,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get the headers from the incoming request
+    const headers = request.headers;
+
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
       include: { company: true },
@@ -130,8 +139,8 @@ export async function POST(request: Request) {
     const parsedRecords = searchResults
       .map((result: { record_id: string }) => parseRecordId(result.record_id));
 
-    // Pass request headers to fetchContractDetails
-    const contractDetails = await fetchContractDetails(parsedRecords, request.headers);
+    // Pass the headers to fetchContractDetails
+    const contractDetails = await fetchContractDetails(parsedRecords, headers);
     
     const formattedContracts = contractDetails.map((contract: any) => ({
       record_id: contract.record_id,
