@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ClerkProvider>
+      <ClerkProvider dynamic>
         <body className={`min-h-screen bg-gray-50 ${geistMono.variable} antialiased`}>
           {children}
         </body>
