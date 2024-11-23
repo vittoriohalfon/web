@@ -1,18 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { Pool } from 'pg';
-
-// Create a connection pool to the AWS database
-const pool = new Pool({
-  host: process.env.AWS_DB_HOST,
-  database: process.env.AWS_DB_NAME,
-  user: process.env.AWS_DB_USER,
-  password: process.env.AWS_DB_PASS,
-  port: parseInt(process.env.AWS_DB_PORT || '5432'),
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
+import { db } from '@/lib/db';
 
 interface ContractRequest {
   contracts: Array<{
@@ -136,7 +124,7 @@ export async function POST(request: Request) {
     console.log('Query:', query);
     console.log('Parameters:', uniqueNoticeIds);
 
-    const result = await pool.query(query, uniqueNoticeIds);
+    const result = await db.query(query, uniqueNoticeIds);
     
     // Log the query results
     console.log('Query results:', result.rows);
