@@ -139,7 +139,7 @@ export const TenderList: React.FC = () => {
               title: tender.title,
               description: tender.description,
               match: tender.match_percentage,
-              budget: tender.amount ? `${tender.currency} ${tender.amount.toLocaleString()}` : 'Not specified',
+              budget: tender.amount ? `${tender.currency} ${tender.amount.toLocaleString()}` : 'N/A',
               country: tender.country || 'EU',
               countryFlag: tender.country 
                 ? countryCodeToFlagPath(tender.country)
@@ -156,7 +156,7 @@ export const TenderList: React.FC = () => {
                 month: 'long',
                 day: 'numeric'
               }) : 'N/A',
-              dueIn: tender.deadline ? getDaysRemaining(new Date(tender.deadline)) : 'Not specified',
+              dueIn: tender.deadline ? getDaysRemaining(new Date(tender.deadline)) : 'N/A',
             }}
           />
         );
