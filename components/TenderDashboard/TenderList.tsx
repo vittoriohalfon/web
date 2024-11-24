@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TenderCard } from "./TenderCard";
 import { TenderCardSkeleton } from "./TenderCardSkeleton";
-import { useAuth } from "@clerk/nextjs";
 
 interface Tender {
   title: string;
@@ -77,44 +76,13 @@ const countryCodeToFlagPath = (countryCode: string): string => {
   return flagPath;
 };
 
-export const TenderList: React.FC = () => {
-  const [tenders, setTenders] = useState<Tender[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { getToken } = useAuth();
+interface TenderListProps {
+  tenders: Tender[];
+  loading: boolean;
+  error: string | null;
+}
 
-  useEffect(() => {
-    const fetchTenders = async () => {
-      try {
-        // Get the session token
-        const sessionToken = await getToken();
-        
-        const response = await fetch('/api/similarity-search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sessionToken}`,
-          },
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch tenders');
-        }
-
-        const data = await response.json();
-
-        console.log("Raw JSON from API:", data);
-        setTenders(data.contracts || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load tenders');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTenders();
-  }, [getToken]);
-
+export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error }) => {
   if (loading) {
     return (
       <div className="flex flex-col gap-4 p-6 w-full max-md:px-5 max-md:max-w-full">

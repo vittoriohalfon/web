@@ -1,9 +1,12 @@
+"use client";
+
 import * as React from "react";
 import { Timeline } from "./components/Timeline";
 import { Lot } from "./components/Lot";
 import { ContractSummary } from "./components/ContractSummary";
 import { BuyerInfo } from "./components/BuyerInfo";
 import { Sidebar } from "../shared/Sidebar";
+import { BidStatusList } from "./components/BidStatusList";
 
 const timelineData = [
   {
@@ -68,6 +71,26 @@ const buyerInfoData = {
 };
 
 export const TenderDetails: React.FC = () => {
+  const [showBidStatus, setShowBidStatus] = React.useState(false);
+  const [currentStatus, setCurrentStatus] = React.useState("Unqualified");
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowBidStatus(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleStatusChange = (status: string) => {
+    setCurrentStatus(status);
+    setShowBidStatus(false);
+  };
+
   return (
     <div className="bg-white">
       <div className="flex">
@@ -125,21 +148,37 @@ export const TenderDetails: React.FC = () => {
                 </div>
 
                 <div className="flex gap-4 items-center text-sm">
-                  <button className="flex overflow-hidden gap-2 items-center self-stretch h-full leading-none text-neutral-950">
-                    <img
-                      loading="lazy"
-                      src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/9fb5aa1da55802f5907ee07448f531bff1b06f50ebf3e446efbc5e577f9cb97b?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                      alt=""
-                      className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
-                    />
-                    <span className="self-stretch my-auto">Bid Submitted</span>
-                    <img
-                      loading="lazy"
-                      src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/16945e6630d6bd7aa37ef74f5e07f7c47910c9b5367a25462f3e7f21355cbe89?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                      alt=""
-                      className="object-contain shrink-0 self-stretch my-auto w-3.5 aspect-square"
-                    />
-                  </button>
+                  <div className="relative" ref={dropdownRef}>
+                    <button 
+                      className="flex overflow-hidden gap-2 items-center self-stretch h-full leading-none text-neutral-950"
+                      onClick={() => setShowBidStatus(!showBidStatus)}
+                      aria-expanded={showBidStatus}
+                      aria-haspopup="listbox"
+                    >
+                      <img
+                        loading="lazy"
+                        src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/9fb5aa1da55802f5907ee07448f531bff1b06f50ebf3e446efbc5e577f9cb97b?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+                        alt=""
+                        className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
+                      />
+                      <span className="self-stretch my-auto">Bid Status</span>
+                      <img
+                        loading="lazy"
+                        src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/16945e6630d6bd7aa37ef74f5e07f7c47910c9b5367a25462f3e7f21355cbe89?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+                        alt=""
+                        className="object-contain shrink-0 self-stretch my-auto w-3.5 aspect-square"
+                      />
+                    </button>
+                    {showBidStatus && (
+                      <div className="absolute top-full right-0 mt-1 z-50">
+                        <BidStatusList
+                          currentStatus={currentStatus}
+                          onStatusChange={handleStatusChange}
+                          className="border border-gray-200 rounded-lg"
+                        />
+                      </div>
+                    )}
+                  </div>
                   <button className="gap-2 self-stretch py-1.5 pr-2.5 pl-2.5 my-auto text-center rounded-lg border border-solid border-zinc-300 text-zinc-800 w-[123px]">
                     Download PDF
                   </button>

@@ -31,4 +31,17 @@ interface TimelineItem {
     website: string;
   }
   
-  export type { TimelineItem, LotItem, ContractSummary, BuyerInfo };
+  interface StatusItemProps {
+    icon: string;
+    label: string;
+    isFirst?: boolean;
+    isLast?: boolean;
+  }
+  
+  interface BidStatusListProps {
+    className?: string;
+    onStatusChange?: (status: string) => void;
+    currentStatus?: string;
+  }
+  
+  export type { TimelineItem, LotItem, ContractSummary, BuyerInfo, StatusItemProps, BidStatusListProps };

@@ -5,10 +5,12 @@ import { db } from '@/lib/db';
 interface ContractRequest {
   contracts: Array<{
     noticeId: string;
+    lotId?: string;
   }>;
 }
 
 interface ContractDetailsResponse {
+  record_id?: string;
   notice_id: string;
   title: string;
   description: string;
@@ -129,17 +131,26 @@ export async function POST(request: Request) {
     // Log the query results
     console.log('Query results:', result.rows);
 
-    const contractDetails = result.rows.map(row => ({
-      notice_id: row.notice_id,
-      title: decodeSpecialCharacters(row.title),
-      description: decodeSpecialCharacters(row.description),
-      estimated_value: parseFloat(row.estimated_value),
-      currency: row.currency,
-      country: row.country,
-      deadline: row.deadline?.toISOString(),
-      published: row.published?.toISOString(),
-      lot_count: row.lot_count ? parseInt(row.lot_count, 10) : 1
-    }));
+    const contractDetails = result.rows.map(row => {
+      // Find the original contract request to get the lotId
+      const originalContract = contracts.find(c => c.noticeId === row.notice_id);
+      const record_id = originalContract?.lotId ? 
+        `${row.notice_id}_${originalContract.lotId}` : 
+        row.notice_id;
+
+      return {
+        record_id,
+        notice_id: row.notice_id,
+        title: decodeSpecialCharacters(row.title),
+        description: decodeSpecialCharacters(row.description),
+        estimated_value: parseFloat(row.estimated_value),
+        currency: row.currency,
+        country: row.country,
+        deadline: row.deadline?.toISOString(),
+        published: row.published?.toISOString(),
+        lot_count: row.lot_count ? parseInt(row.lot_count, 10) : 1
+      };
+    });
 
     return NextResponse.json({ contracts: contractDetails });
   } catch (error) {

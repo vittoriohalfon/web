@@ -8,7 +8,27 @@ import { FilterBar } from "./FilterBar";
 import { TenderList } from "./TenderList";
 import { Header } from "../shared/Header";
 
-export const TenderDashboard: React.FC = () => {
+interface Tender {
+  title: string;
+  description: string;
+  amount: number | null;
+  currency: string | null;
+  status: string;
+  match_percentage: number;
+  published: string;
+  lot_count: number;
+  deadline?: string;
+  country: string | null;
+  id: string;
+}
+
+interface TenderDashboardProps {
+  tenders: Tender[];
+  loading: boolean;
+  error: string | null;
+}
+
+export const TenderDashboard: React.FC<TenderDashboardProps> = ({ tenders, loading, error }) => {
   return (
     <div className="flex overflow-hidden bg-white">
       <Sidebar />
@@ -18,7 +38,7 @@ export const TenderDashboard: React.FC = () => {
           <SearchBar />
           <FilterBar />
         </section>
-        <TenderList />
+        <TenderList tenders={tenders} loading={loading} error={error} />
       </main>
     </div>
   );

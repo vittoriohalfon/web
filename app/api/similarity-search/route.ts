@@ -86,7 +86,6 @@ async function searchContracts(user: { company: Company | null }) {
 
 async function fetchContractDetails(records: ParsedContract[], headers: Headers) {
   try {
-    // Get the authorization header from the incoming request
     const authHeader = headers.get('Authorization');
     
     if (!authHeader) {
@@ -99,7 +98,12 @@ async function fetchContractDetails(records: ParsedContract[], headers: Headers)
         'Content-Type': 'application/json',
         'Authorization': authHeader,
       },
-      body: JSON.stringify({ contracts: records }),
+      body: JSON.stringify({ 
+        contracts: records.map(record => ({
+          noticeId: record.noticeId,
+          lotId: record.lotId
+        }))
+      }),
     });
 
     if (!response.ok) {
@@ -159,6 +163,8 @@ export async function POST(request: Request) {
       buyer: contract.buyer
     }));
 
+    console.log('Formatted Contracts:', formattedContracts);
+    
     return NextResponse.json({
       contracts: formattedContracts
     });
