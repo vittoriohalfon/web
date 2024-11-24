@@ -14,6 +14,7 @@ export const StatusItem: React.FC<StatusItemProps> = ({
       className={`
         flex gap-2 items-center px-2 py-1 w-full bg-white hover:bg-gray-50 
         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-gray-50
+        cursor-pointer
         ${isFirst ? 'rounded-t' : ''} 
         ${isLast ? 'rounded-b' : ''}
       `}

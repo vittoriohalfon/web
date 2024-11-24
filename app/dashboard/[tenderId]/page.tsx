@@ -1,11 +1,11 @@
 import { TenderDetails } from '@/components/TenderDetails/TenderDetails';
 import { Metadata } from 'next';
 
-interface Props {
-  params: {
-    noticeId: string;
-  };
-}
+type Props = {
+  params: Promise<{
+    tenderId: string;
+  }>;
+};
 
 export const metadata: Metadata = {
   title: 'Tender Details',
@@ -13,5 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default async function TenderDetailsPage({ params }: Props) {
-  return <TenderDetails tenderId={params.noticeId} />;
+  const { tenderId } = await params;
+  return <TenderDetails tenderId={tenderId} />;
 } 

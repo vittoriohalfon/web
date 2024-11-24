@@ -23,8 +23,8 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
     <Link href={`/dashboard/${tender.id}`} className="block">
       <div className="flex flex-col gap-4 p-6 w-full bg-white rounded-lg border border-solid shadow-sm border-zinc-300 max-md:px-5 max-md:max-w-full hover:shadow-md transition-shadow">
         <div className="flex flex-wrap justify-between items-center w-full max-md:max-w-full">
-          <div className="flex flex-col flex-1 shrink justify-center self-stretch my-auto basis-8 min-w-[240px] max-md:max-w-full">
-            <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full">{tender.title}</h2>
+          <div className="flex flex-col flex-1 shrink justify-center self-stretch my-auto basis-8 min-w-[240px] max-w-[900px] max-md:max-w-full">
+            <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full line-clamp-1">{tender.title}</h2>
             <div className="flex gap-4 items-start self-start mt-4 text-xs font-medium leading-loose text-zinc-800">
               <div className={`gap-2 self-stretch px-2 py-1 text-emerald-600 ${tender.match >= 75 ? 'bg-indigo-50' : 'bg-green-100'} rounded border ${tender.match >= 75 ? 'border-indigo-600' : ''} border-solid min-h-[26px]`}>
                 {tender.match}% Match

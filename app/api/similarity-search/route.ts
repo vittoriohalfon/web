@@ -23,7 +23,11 @@ interface SearchResult {
   lot_count: number;
 }
 
-async function searchContracts(user: { company: Company | null }) {
+interface SearchApiResponse {
+  record_id: string;
+}
+
+async function searchContracts(user: { company: Company | null }): Promise<SearchApiResponse[]> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
     console.log('API URL:', apiUrl);
@@ -67,7 +71,7 @@ async function searchContracts(user: { company: Company | null }) {
       throw new Error(responseData.error || `API request failed with status ${response.status}`);
     }
 
-    return responseData || [];
+    return responseData as SearchApiResponse[];
   } catch (error) {
     console.error('Error in searchContracts:', error);
     throw error;
@@ -82,7 +86,7 @@ async function fetchContractDetails(noticeIds: string[], headers: Headers) {
       throw new Error('No authorization header present');
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/contract-details`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/aurora/contract-details`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -128,13 +132,16 @@ export async function POST(request: Request) {
     // Get similarity search results
     const searchResults = await searchContracts(user);
     
-    // Extract notice IDs from search results
-    const noticeIds = searchResults.map((result: { record_id: string }) => 
-      result.record_id.split('_')[0]  // Take only the notice_id part before any '_'
+    // Extract notice IDs from search results - fixing the property name and handling the split
+    const noticeIds = searchResults.map((result) => 
+      result.record_id.split('_')[0]
     );
 
+    // Remove duplicates to avoid querying the same notice multiple times
+    const uniqueNoticeIds = [...new Set(noticeIds)];
+
     // Pass the headers to fetchContractDetails
-    const contractDetails = await fetchContractDetails(noticeIds, headers);
+    const contractDetails = await fetchContractDetails(uniqueNoticeIds, headers);
     
     const formattedContracts = contractDetails.map((contract: any) => ({
       notice_id: contract.notice_id,

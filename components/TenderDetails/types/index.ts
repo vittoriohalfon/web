@@ -40,8 +40,9 @@ interface TimelineItem {
   
   interface BidStatusListProps {
     className?: string;
-    onStatusChange?: (status: string) => void;
-    currentStatus?: string;
+    onStatusChange: (status: string) => void;
+    currentStatus: string;
+    items: Array<{ icon: string; label: string; }>;
   }
   
   export type { TimelineItem, LotItem, ContractSummary, BuyerInfo, StatusItemProps, BidStatusListProps };
