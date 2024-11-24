@@ -8,6 +8,10 @@ import { BuyerInfo } from "./components/BuyerInfo";
 import { Sidebar } from "../shared/Sidebar";
 import { BidStatusList } from "./components/BidStatusList";
 
+interface TenderDetailsProps {
+  tenderId: string;
+}
+
 const timelineData = [
   {
     icon: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/446ccb2b086ec643cf1bad459edac9161265bb0daf59c5590c144a45784c07e3?apiKey=27ce83af570848e9b22665bc31a03bc0&",
@@ -70,7 +74,9 @@ const buyerInfoData = {
   website: "http://www.faxquote.com"
 };
 
-export const TenderDetails: React.FC = () => {
+export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
+  console.log('Tender ID:', tenderId);
+
   const [showBidStatus, setShowBidStatus] = React.useState(false);
   const [currentStatus, setCurrentStatus] = React.useState("Unqualified");
   const dropdownRef = React.useRef<HTMLDivElement>(null);

@@ -1,9 +1,9 @@
-import { TenderDetails } from '@/components/TenderDetails';
+import { TenderDetails } from '@/components/TenderDetails/TenderDetails';
 import { Metadata } from 'next';
 
 interface Props {
   params: {
-    tenderId: string;
+    noticeId: string;
   };
 }
 
@@ -12,6 +12,6 @@ export const metadata: Metadata = {
   description: 'Detailed information about the tender',
 };
 
-export default function TenderDetailsPage({ params }: Props) {
-  return <TenderDetails tenderId={params.tenderId} />;
+export default async function TenderDetailsPage({ params }: Props) {
+  return <TenderDetails tenderId={params.noticeId} />;
 } 

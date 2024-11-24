@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { Company } from '@prisma/client';
 
 interface SearchResult {
-  record_id: string;
+  notice_id: string;
   title: string;
   description: string;
   estimated_value: number;
@@ -21,16 +21,6 @@ interface SearchResult {
   deadline: string;
   published: string;
   lot_count: number;
-}
-
-interface ParsedContract {
-  noticeId: string;
-  lotId: string;
-}
-
-function parseRecordId(recordId: string): ParsedContract {
-  const [noticeId, lotId] = recordId.split('_');
-  return { noticeId, lotId };
 }
 
 async function searchContracts(user: { company: Company | null }) {
@@ -84,7 +74,7 @@ async function searchContracts(user: { company: Company | null }) {
   }
 }
 
-async function fetchContractDetails(records: ParsedContract[], headers: Headers) {
+async function fetchContractDetails(noticeIds: string[], headers: Headers) {
   try {
     const authHeader = headers.get('Authorization');
     
@@ -99,10 +89,7 @@ async function fetchContractDetails(records: ParsedContract[], headers: Headers)
         'Authorization': authHeader,
       },
       body: JSON.stringify({ 
-        contracts: records.map(record => ({
-          noticeId: record.noticeId,
-          lotId: record.lotId
-        }))
+        contracts: noticeIds.map(noticeId => ({ noticeId }))
       }),
     });
 
@@ -141,15 +128,16 @@ export async function POST(request: Request) {
     // Get similarity search results
     const searchResults = await searchContracts(user);
     
-    // Parse the record IDs into notice and lot IDs
-    const parsedRecords = searchResults
-      .map((result: { record_id: string }) => parseRecordId(result.record_id));
+    // Extract notice IDs from search results
+    const noticeIds = searchResults.map((result: { record_id: string }) => 
+      result.record_id.split('_')[0]  // Take only the notice_id part before any '_'
+    );
 
     // Pass the headers to fetchContractDetails
-    const contractDetails = await fetchContractDetails(parsedRecords, headers);
+    const contractDetails = await fetchContractDetails(noticeIds, headers);
     
     const formattedContracts = contractDetails.map((contract: any) => ({
-      record_id: contract.record_id,
+      notice_id: contract.notice_id,
       title: contract.title,
       description: contract.description,
       amount: contract.estimated_value,

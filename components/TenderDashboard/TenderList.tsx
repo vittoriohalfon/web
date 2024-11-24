@@ -3,20 +3,7 @@
 import React from "react";
 import { TenderCard } from "./TenderCard";
 import { TenderCardSkeleton } from "./TenderCardSkeleton";
-
-interface Tender {
-  title: string;
-  description: string;
-  amount: number | null;
-  currency: string | null;
-  status: string;
-  match_percentage: number;
-  published: string;
-  lot_count: number;
-  deadline?: string;
-  country: string | null;
-  id: string;
-}
+import { Tender } from "@/types/tender";
 
 const countryCodeToFlagPath = (countryCode: string): string => {
   console.log("Input countryCode:", countryCode);
@@ -105,7 +92,7 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
           <TenderCard 
             key={index} 
             tender={{
-              id: tender.id,
+              id: tender.notice_id,
               title: tender.title,
               description: tender.description,
               match: tender.match_percentage,

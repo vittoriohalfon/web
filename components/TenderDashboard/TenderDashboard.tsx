@@ -7,20 +7,7 @@ import { SearchBar } from "./SearchBar";
 import { FilterBar } from "./FilterBar";
 import { TenderList } from "./TenderList";
 import { Header } from "../shared/Header";
-
-interface Tender {
-  title: string;
-  description: string;
-  amount: number | null;
-  currency: string | null;
-  status: string;
-  match_percentage: number;
-  published: string;
-  lot_count: number;
-  deadline?: string;
-  country: string | null;
-  id: string;
-}
+import { Tender } from "@/types/tender";
 
 interface TenderDashboardProps {
   tenders: Tender[];
