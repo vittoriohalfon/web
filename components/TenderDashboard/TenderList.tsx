@@ -16,6 +16,7 @@ interface Tender {
   lot_count: number;
   deadline?: string;
   country: string | null;
+  id: string;
 }
 
 const countryCodeToFlagPath = (countryCode: string): string => {
@@ -136,6 +137,7 @@ export const TenderList: React.FC = () => {
           <TenderCard 
             key={index} 
             tender={{
+              id: tender.id,
               title: tender.title,
               description: tender.description,
               match: tender.match_percentage,

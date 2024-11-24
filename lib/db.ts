@@ -6,13 +6,10 @@ const db = new Pool({
   port: parseInt(process.env.AWS_DB_PORT || '5432'),
   database: process.env.AWS_DB_NAME,
   user: process.env.AWS_DB_USER,
-  password: process.env.AWS_DB_PASSWORD,
+  password: process.env.AWS_DB_PASS,
   ssl: {
     rejectUnauthorized: false // Required for AWS RDS SSL connections
-  },
-  max: 20, // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // How long a client is allowed to remain idle before being closed
-  connectionTimeoutMillis: 2000, // How long to wait for a connection
+  }
 });
 
 // Add error handler for the pool

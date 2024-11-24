@@ -103,7 +103,8 @@ async function fetchContractDetails(records: ParsedContract[], headers: Headers)
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch contract details: ${response.statusText}`);
+      const errorData = await response.json();
+      throw new Error(`Failed to fetch contract details: ${response.status} - ${errorData.error || response.statusText}`);
     }
 
     const data = await response.json();
