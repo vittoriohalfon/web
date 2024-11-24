@@ -7,6 +7,8 @@ import { ContractSummary } from "./components/ContractSummary";
 import { BuyerInfo } from "./components/BuyerInfo";
 import { Sidebar } from "../shared/Sidebar";
 import { BidStatusList } from "./components/BidStatusList";
+import { countryCodeToFlagPath } from "@/utils/codeConvertor";
+import { Header } from "../shared/Header";
 
 interface TenderDetailsProps {
   tenderId: string;
@@ -20,6 +22,7 @@ interface TenderData {
   estimatedValue: number;
   currency: string;
   country: string;
+  match_percentage: number;
   published: string;
   deadline: string;
   lots: Array<{
@@ -134,7 +137,7 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
     
     // If past deadline
     if (diffTime < 0) {
-      return "Expired";
+      return "EXPIRED";
     }
   
     const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -197,15 +200,7 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
         <Sidebar />
         <main className="flex-1 ml-[312px] max-md:ml-0">
           <div className="flex flex-col w-full">
-            <header className="flex flex-wrap gap-1 justify-center items-center p-2 w-full text-base font-medium text-indigo-700 bg-indigo-50">
-              <div className="self-stretch my-auto">
-                You have <span className="font-semibold text-indigo-700">6</span> days
-                left of your free trial!
-              </div>
-              <a href="#" className="gap-2 self-stretch my-auto underline decoration-auto decoration-solid underline-offset-auto">
-                Upgrade here
-              </a>
-            </header>
+            <Header userCreatedAt={new Date()} />
 
             <nav aria-label="Breadcrumb" className="flex gap-2 items-center self-start mt-6 ml-6 text-sm leading-none bg-white max-md:ml-2.5">
               <div className="self-stretch my-auto font-medium whitespace-nowrap text-neutral-600">
@@ -218,31 +213,31 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
                 className="object-contain shrink-0 self-stretch my-auto w-4 aspect-square"
               />
               <div className="self-stretch my-auto font-semibold min-w-[240px] text-neutral-950">
-                Vehicle Fleet Management Services
+                {tenderData.title}
               </div>
             </nav>
 
             <section className="flex flex-wrap gap-7 justify-between items-start p-6 w-full bg-white max-md:px-5 max-md:max-w-full">
               <div className="flex justify-between items-start w-full">
-                <div className="flex flex-col justify-center max-w-[649px]">
+                <div className="flex flex-col justify-center max-w-[900px]">
                   <h1 className="text-2xl font-semibold text-neutral-950">
-                    Vehicle Fleet Management Services
+                    {tenderData.title}
                   </h1>
                   <div className="flex gap-4 items-start self-start mt-4 text-xs font-medium leading-loose text-zinc-800">
                     <div className="gap-2 self-stretch px-2 py-1 text-emerald-600 bg-indigo-50 rounded border border-indigo-600 border-solid min-h-[26px]">
-                      75% Match
+                      {tenderData.match_percentage}% Match
                     </div>
                     <div className="gap-2 self-stretch px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
-                      €8.5M
+                      {tenderData.currency} {tenderData.estimatedValue.toLocaleString()}
                     </div>
                     <div className="flex gap-2 items-center px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
                       <img
                         loading="lazy"
-                        src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/1e73f3384662b9bd545affdf49bcb5f218534a296ee473890d515079bada9aae?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                        alt="Ireland flag"
+                        src={countryCodeToFlagPath(tenderData.country)}
+                        alt={`${tenderData.country} flag`}
                         className="object-contain shrink-0 self-stretch my-auto aspect-[1.29] w-[18px]"
                       />
-                      <div className="self-stretch my-auto">Ireland</div>
+                      <div className="self-stretch my-auto">{tenderData.country}</div>
                     </div>
                   </div>
                 </div>
@@ -317,11 +312,7 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
               <div className="flex flex-col w-full text-neutral-950 max-md:max-w-full">
                 <h2 className="text-xl font-semibold max-md:max-w-full">Description</h2>
                 <p className="p-6 mt-4 w-full text-base leading-6 rounded-lg border border-solid border-zinc-300 max-md:px-5 max-md:max-w-full">
-                  Tax return preparation and tax advisory services for Great
-                  Places Housing Group (GPHG). The provider must prepare and
-                  submit where applicable tax computations, tax notes for our
-                  financial statements, tax returns and iXBRL versions of our
-                  financial statements for the five separate organisations.
+                  {tenderData.description}
                 </p>
               </div>
 
