@@ -26,12 +26,24 @@ interface SpecificContractResponse {
     }>;
     buyers: Array<{
         name: string;
-        address: string;
-        phone: string;
-        email: string;
         website: string;
+        phone: string;
+        address_city: string;
+        address_street: string;
+        address_postal: string;
+        address_country: string;
     }>;   
 }
+
+type Buyer = {
+  organization_name: string;
+  organization_website: string | null;
+  contact_phone: string | null;
+  address_city: string | null;
+  address_street_name: string | null;
+  address_postal_code: string | null;
+  address_country_code: string | null;
+};
 
 export async function POST(request: Request) {
   try {
@@ -78,25 +90,31 @@ export async function POST(request: Request) {
       WHERE notice_id = $1
     `;
 
-    // Buyers query - simplified to get all organizations for contract notices
     const buyersQuery = `
-      SELECT DISTINCT
-        o.name,
-        CONCAT(
-          COALESCE(a.street_name, ''), ', ',
-          COALESCE(a.city, ''), ', ',
-          COALESCE(a.postal_code, ''), ', ',
-          COALESCE(a.country_code, '')
-        ) as address,
-        c.phone,
-        c.email,
-        o.website_url as website
-      FROM base_notices bn
-      JOIN organizations o ON bn.contract_folder_id = o.org_id
-      LEFT JOIN addresses a ON o.org_id = a.org_id
-      LEFT JOIN contacts c ON o.org_id = c.org_id
-      WHERE bn.notice_id = $1
-    `;
+      SELECT 
+        o.name AS organization_name,
+        o.website_url AS organization_website,
+        c.phone AS contact_phone,
+        a.city AS address_city,
+        a.street_name AS address_street_name,
+        a.postal_code AS address_postal_code,
+        a.country_code AS address_country_code
+      FROM 
+        public.organizations o
+      JOIN 
+        public.notice_organizations no 
+      ON 
+        o.company_id = no.company_id
+      LEFT JOIN 
+        public.contacts c 
+      ON 
+        o.company_id = c.company_id
+      LEFT JOIN 
+        public.addresses a 
+      ON 
+        o.company_id = a.company_id
+      WHERE 
+        no.notice_id = $1`;
 
     const [contractResult, lotsResult, buyersResult] = await Promise.all([
       db.query(contractQuery, [noticeId]),
@@ -127,14 +145,17 @@ export async function POST(request: Request) {
         estimatedValue: parseFloat(lot.estimated_value)
       })),
       buyers: buyersResult.rows.map(buyer => ({
-        name: decodeSpecialCharacters(buyer.name),
-        address: decodeSpecialCharacters(buyer.address),
-        phone: buyer.phone || '',
-        email: buyer.email || '',
-        website: buyer.website || ''
+        name: decodeSpecialCharacters(buyer.organization_name) || '',
+        website: buyer.organization_website || '',
+        phone: buyer.contact_phone || '',
+        address_city: buyer.address_city || '',
+        address_street: buyer.address_street_name || '',
+        address_postal: buyer.address_postal_code || '',
+        address_country: buyer.address_country_code || ''
       }))
     };
 
+    console.log(response);
     return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching contract details:', error);

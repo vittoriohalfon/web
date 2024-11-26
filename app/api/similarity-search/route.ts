@@ -9,15 +9,6 @@ interface SearchResult {
   description: string;
   estimated_value: number;
   currency: string;
-  buyer: {
-    name: string;
-    email: string;
-    website: string;
-    location: {
-      city: string;
-      country: string;
-    }
-  };
   deadline: string;
   published: string;
   lot_count: number;
@@ -155,7 +146,6 @@ export async function POST(request: Request) {
       published: contract.published,
       lot_count: contract.lot_count,
       deadline: contract.deadline,
-      buyer: contract.buyer
     }));
 
     console.log('Formatted Contracts:', formattedContracts);
