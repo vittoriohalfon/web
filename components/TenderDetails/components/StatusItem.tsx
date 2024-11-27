@@ -12,7 +12,7 @@ export const StatusItem: React.FC<StatusItemProps> = ({
       role="option"
       tabIndex={0}
       className={`
-        flex gap-2 items-center px-2 py-1 w-full bg-white hover:bg-gray-50 
+        flex gap-2 items-center px-3 py-2 w-full bg-white hover:bg-gray-50 
         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-gray-50
         cursor-pointer
         ${isFirst ? 'rounded-t' : ''} 
@@ -24,9 +24,9 @@ export const StatusItem: React.FC<StatusItemProps> = ({
         src={icon}
         alt=""
         aria-hidden="true"
-        className="object-contain shrink-0 self-stretch my-auto w-5 aspect-square"
+        className="object-contain shrink-0 w-5 h-5"
       />
-      <p className="flex-1 shrink self-stretch my-auto basis-0">{label}</p>
+      <p className="flex-1 truncate">{label}</p>
     </div>
   );
 }; 

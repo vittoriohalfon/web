@@ -10,7 +10,7 @@ export const BidStatusList: React.FC<BidStatusListProps> = ({
 }) => {
   return (
     <section 
-      className={`flex flex-col text-sm shadow-lg max-w-[151px] text-neutral-950 ${className}`}
+      className={`flex flex-col text-sm shadow-lg w-[200px] text-neutral-950 ${className}`}
       role="listbox"
       aria-label="Bid Status List"
       aria-orientation="vertical"

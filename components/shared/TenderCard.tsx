@@ -91,7 +91,7 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
               className={`object-contain shrink-0 self-stretch my-auto w-5 aspect-square ${isLiked ? 'filter invert' : ''}`}
             />
             <span className="self-stretch my-auto">
-              {isLoading ? '...' : (isLiked ? 'Liked' : 'Like')}
+              {isLoading ? '...' : (isLiked ? 'Saved' : 'Save')}
             </span>
           </button>
         </div>
