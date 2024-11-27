@@ -5,20 +5,7 @@ import { ProfileForm } from "./ProfileForm";
 import { Header } from "../shared/Header";
 import { Sidebar } from "../shared/Sidebar";
 import { useRouter } from "next/navigation";
-
-interface FormData {
-  companyName: string;
-  website: string;
-  turnover: string;
-  location: string;
-  experienceWithTenders: boolean;
-  industrySector: string;
-  companyOverview: string;
-  coreProducts: string;
-  demographic: string;
-  uniqueSellingPoint: string;
-  geographic: string;
-}
+import { FormData } from "./ProfileForm";
 
 interface CompanyData {
   name: string;
@@ -55,10 +42,10 @@ export const CompanyProfile: React.FC = () => {
       experienceWithTenders: data.experienceWithTenders,
       industrySector: data.industrySector || "",
       companyOverview: data.companyOverview || "",
-      coreProducts: data.coreProductsServices || "",
+      coreProductsServices: data.coreProductsServices || "",
       demographic: data.demographic || "",
       uniqueSellingPoint: data.uniqueSellingPoint || "",
-      geographic: data.geographicFocus || "",
+      geographicFocus: data.geographicFocus || "",
     };
   };
 
@@ -70,10 +57,10 @@ export const CompanyProfile: React.FC = () => {
     experienceWithTenders: data.experienceWithTenders,
     industrySector: data.industrySector,
     companyOverview: data.companyOverview,
-    coreProductsServices: data.coreProducts,
+    coreProductsServices: data.coreProductsServices,
     demographic: data.demographic,
     uniqueSellingPoint: data.uniqueSellingPoint,
-    geographicFocus: data.geographic,
+    geographicFocus: data.geographicFocus,
     userCreatedAt: userCreatedAt,
   });
 
@@ -120,7 +107,6 @@ export const CompanyProfile: React.FC = () => {
       const updatedData = await response.json();
       setProfile(formatCompanyData(updatedData));
       setSaved(true);
-      setError(null);
       
       setTimeout(() => {
         router.push('/dashboard');

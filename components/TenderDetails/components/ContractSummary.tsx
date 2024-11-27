@@ -33,14 +33,20 @@ export const ContractSummary: React.FC<ContractSummaryProps> = ({ data }) => {
         </div>
         <div className="flex flex-col mt-6 w-full max-md:max-w-full">
           <div className="text-stone-500 max-md:max-w-full">
-            Address for Submission{" "}
+            Address for Submission
           </div>
-          <a
-            href={data.submissionUrl}
-            className="mt-2 leading-6 text-indigo-700 underline decoration-auto decoration-solid underline-offset-auto max-md:max-w-full"
-          >
-            {data.submissionUrl}
-          </a>
+          {data.submissionUrl ? (
+            <a
+              href={data.submissionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 leading-6 text-indigo-700 underline decoration-auto decoration-solid underline-offset-auto max-md:max-w-full"
+            >
+              {data.submissionUrl}
+            </a>
+          ) : (
+            <div className="mt-2 text-neutral-500">Not available</div>
+          )}
         </div>
       </div>
     </div>

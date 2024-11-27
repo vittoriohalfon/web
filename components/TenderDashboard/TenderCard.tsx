@@ -1,5 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 
 interface TenderCardProps {
   tender: {
@@ -15,10 +18,41 @@ interface TenderCardProps {
     posted: string;
     submissionDate: string;
     dueIn: string;
+    isLiked?: boolean;
   };
 }
 
 export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
+  const [isLiked, setIsLiked] = useState(tender.isLiked || false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('/api/like-tender', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contractNoticeId: tender.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to like tender');
+      }
+
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error('Error liking tender:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Link href={`/dashboard/${tender.id}`} className="block">
       <div className="flex flex-col gap-4 p-6 w-full bg-white rounded-lg border border-solid shadow-sm border-zinc-300 max-md:px-5 max-md:max-w-full hover:shadow-md transition-shadow">
@@ -38,16 +72,34 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
               </div>
             </div>
           </div>
-          <button className="flex gap-1.5 justify-center items-center self-end px-4 py-1.5 my-auto text-sm font-semibold text-center text-indigo-700 whitespace-nowrap bg-white rounded-lg border border-indigo-700 border-solid w-[98px]">
-            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&" alt="" className="object-contain shrink-0 self-stretch my-auto w-5 aspect-square" />
-            <span className="self-stretch my-auto">Like</span>
+          <button
+            onClick={handleLike}
+            disabled={isLoading}
+            className={`flex gap-1.5 justify-center items-center self-end px-4 py-1.5 my-auto text-sm font-semibold text-center whitespace-nowrap rounded-lg border border-solid w-[98px] transition-colors ${
+              isLiked 
+                ? 'text-white bg-indigo-700 border-indigo-700' 
+                : 'text-indigo-700 bg-white border-indigo-700'
+            }`}
+          >
+            <img 
+              loading="lazy" 
+              src={isLiked 
+                ? "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+                : "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+              } 
+              alt="" 
+              className={`object-contain shrink-0 self-stretch my-auto w-5 aspect-square ${isLiked ? 'filter invert' : ''}`}
+            />
+            <span className="self-stretch my-auto">
+              {isLoading ? '...' : (isLiked ? 'Liked' : 'Like')}
+            </span>
           </button>
         </div>
         <div className="flex flex-wrap gap-6 w-full max-md:max-w-full">
           <div className="flex flex-col grow shrink min-w-[240px] w-[763px] max-md:max-w-full">
-            <p className="text-lg leading-7 text-neutral-950 max-md:max-w-full line-clamp-3">
+            <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose max-md:max-w-full">
               {tender.description}
-            </p>
+            </ReactMarkdown>
             <div className="flex flex-wrap flex-1 gap-10 items-center mt-4 whitespace-nowrap size-full max-md:max-w-full">
               <div className="flex flex-col self-stretch my-auto w-[88px]">
                 <div className="text-sm leading-none text-stone-500">Lots</div>

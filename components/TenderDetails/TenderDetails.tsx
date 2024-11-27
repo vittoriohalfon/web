@@ -4,7 +4,7 @@ import * as React from "react";
 import { Timeline } from "./components/Timeline";
 import { Lot } from "./components/Lot";
 import { ContractSummary } from "./components/ContractSummary";
-import { BuyerInfo } from "./components/BuyerInfo";
+import { Buyer } from "./components/Buyer";
 import { Sidebar } from "../shared/Sidebar";
 import { BidStatusList } from "./components/BidStatusList";
 import { countryCodeToFlagPath } from "@/utils/codeConvertor";
@@ -19,7 +19,8 @@ interface TenderData {
   noticePublicationId: string;
   title: string;
   description: string;
-  estimatedValue: number;
+  estimatedValue: number | null;
+  attachmentUri: string;
   currency: string;
   country: string;
   match_percentage: number;
@@ -34,10 +35,13 @@ interface TenderData {
   }>;
   buyers: Array<{
     name: string;
-    address: string;
+    website: string;
     phone: string;
     email: string;
-    website: string;
+    address_city: string;
+    address_street: string;
+    address_postal: string;
+    address_country: string;
   }>;
 }
 
@@ -66,6 +70,7 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
   React.useEffect(() => {
     const fetchTenderData = async () => {
       try {
+        console.log("Fetching tender data for noticeId:", tenderId);
         const response = await fetch('/api/aurora/specific-contract', {
           method: 'POST',
           headers: {
@@ -122,12 +127,12 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
   }
 
   const transformedLots = tenderData.lots.map((lot, index) => ({
-    ...lot,
+    lotId: lot.lotId,
     number: index + 1,
-    isExpanded: false,
-    status: "Open",
-    estimatedValue: "",
-    duration: ""
+    title: lot.title,
+    description: lot.description,
+    procurementType: lot.procurementType,
+    estimatedValue: lot.estimatedValue
   }));
 
   const calculateDueIn = (deadline: string): string => {
@@ -174,19 +179,11 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
   ];
 
   const contractSummaryData = {
-    location: tenderData.country,
+    location: tenderData.country || 'Not specified',
     lots: tenderData.lots.length,
-    value: `${tenderData.currency} ${tenderData.estimatedValue.toLocaleString()}`,
+    value: `${tenderData.currency} ${tenderData.estimatedValue?.toLocaleString() ?? 'N/A'}`,
     status: "Open",
-    submissionUrl: ""
-  };
-
-  const buyerInfoData = tenderData.buyers[0] || {
-    name: "Not specified",
-    address: "Not specified",
-    phone: "Not specified",
-    email: "Not specified",
-    website: "Not specified"
+    submissionUrl: tenderData.attachmentUri
   };
 
   const handlePdfDownload = () => {
@@ -195,168 +192,176 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
   };
 
   return (
-    <div className="bg-white">
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 ml-[312px] max-md:ml-0">
-          <div className="flex flex-col w-full">
-            <Header userCreatedAt={new Date()} />
+    <div className="flex min-h-screen bg-white">
+      <Sidebar />
+      <main className="flex-1 relative w-full pl-[312px]">
+        <div className="flex flex-col h-full overflow-x-hidden">
+          <Header userCreatedAt={new Date()} />
 
-            <nav aria-label="Breadcrumb" className="flex gap-2 items-center self-start mt-6 ml-6 text-sm leading-none bg-white max-md:ml-2.5">
-              <div className="self-stretch my-auto font-medium whitespace-nowrap text-neutral-600">
-                Home
-              </div>
+          <div className="flex flex-col flex-1 px-6 py-6 max-w-full">
+            <nav aria-label="Breadcrumb" className="flex gap-2 items-center mb-6 text-sm leading-none">
+              <div className="font-medium text-neutral-600">Home</div>
               <img
                 loading="lazy"
                 src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/dba9866dc16385808ab5d2c0084659378401e385d4d70b025461b326918bf618?apiKey=27ce83af570848e9b22665bc31a03bc0&"
                 alt=""
-                className="object-contain shrink-0 self-stretch my-auto w-4 aspect-square"
+                className="w-4 h-4"
               />
-              <div className="self-stretch my-auto font-semibold min-w-[240px] text-neutral-950">
+              <div className="font-semibold text-neutral-950 truncate">
                 {tenderData.title}
               </div>
             </nav>
 
-            <section className="flex flex-wrap gap-7 justify-between items-start p-6 w-full bg-white max-md:px-5 max-md:max-w-full">
-              <div className="flex justify-between items-start w-full">
-                <div className="flex flex-col justify-center max-w-[900px]">
-                  <h1 className="text-2xl font-semibold text-neutral-950">
-                    {tenderData.title}
-                  </h1>
-                  <div className="flex gap-4 items-start self-start mt-4 text-xs font-medium leading-loose text-zinc-800">
-                    <div className="gap-2 self-stretch px-2 py-1 text-emerald-600 bg-indigo-50 rounded border border-indigo-600 border-solid min-h-[26px]">
-                      {tenderData.match_percentage}% Match
-                    </div>
-                    <div className="gap-2 self-stretch px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
-                      {tenderData.currency} {tenderData.estimatedValue.toLocaleString()}
-                    </div>
-                    <div className="flex gap-2 items-center px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
-                      <img
-                        loading="lazy"
-                        src={countryCodeToFlagPath(tenderData.country)}
-                        alt={`${tenderData.country} flag`}
-                        className="object-contain shrink-0 self-stretch my-auto aspect-[1.29] w-[18px]"
-                      />
-                      <div className="self-stretch my-auto">{tenderData.country}</div>
-                    </div>
+            <section className="flex flex-wrap gap-7 justify-between items-start w-full">
+              <div className="flex flex-col flex-1 min-w-0">
+                <h1 className="text-2xl font-semibold text-neutral-950 truncate">
+                  {tenderData.title}
+                </h1>
+                <div className="flex gap-4 items-start self-start mt-4 text-xs font-medium leading-loose text-zinc-800">
+                  <div className="gap-2 self-stretch px-2 py-1 text-emerald-600 bg-indigo-50 rounded border border-indigo-600 border-solid min-h-[26px]">
+                    {tenderData.match_percentage}% Match
                   </div>
-                </div>
-
-                <div className="flex gap-4 items-center text-sm">
-                  <div className="relative" ref={dropdownRef}>
-                    <button 
-                      className="flex overflow-hidden gap-2 items-center self-stretch h-full leading-none text-neutral-950"
-                      onClick={() => setShowBidStatus(!showBidStatus)}
-                      aria-expanded={showBidStatus}
-                      aria-haspopup="listbox"
-                    >
-                      {currentStatus ? (
-                        <>
-                          <img
-                            loading="lazy"
-                            src={currentStatus.icon}
-                            alt=""
-                            className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
-                          />
-                          <span className="self-stretch my-auto">{currentStatus.label}</span>
-                        </>
-                      ) : (
-                        <>
-                          <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/9fb5aa1da55802f5907ee07448f531bff1b06f50ebf3e446efbc5e577f9cb97b?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                            alt=""
-                            className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
-                          />
-                          <span className="self-stretch my-auto">Bid Status</span>
-                        </>
-                      )}
-                      <img
-                        loading="lazy"
-                        src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/16945e6630d6bd7aa37ef74f5e07f7c47910c9b5367a25462f3e7f21355cbe89?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                        alt=""
-                        className="object-contain shrink-0 self-stretch my-auto w-3.5 aspect-square"
-                      />
-                    </button>
-                    {showBidStatus && (
-                      <div className="absolute top-full right-0 mt-1 z-50">
-                        <BidStatusList
-                          currentStatus={currentStatus?.label || ""}
-                          onStatusChange={handleStatusChange}
-                          className="border border-gray-200 rounded-lg"
-                          items={statusItems}
-                        />
-                      </div>
-                    )}
+                  <div className="gap-2 self-stretch px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
+                    {tenderData.currency} {tenderData.estimatedValue?.toLocaleString() ?? 'N/A'}
                   </div>
-                  <button 
-                    onClick={handlePdfDownload}
-                    className="gap-2 self-stretch py-1.5 pr-2.5 pl-2.5 my-auto text-center rounded-lg border border-solid border-zinc-300 text-zinc-800 w-[123px]"
-                  >
-                    Download PDF
-                  </button>
-                  <button className="flex gap-1.5 justify-center items-center self-stretch px-4 py-1.5 my-auto font-semibold text-center text-indigo-700 whitespace-nowrap bg-white rounded-lg border border-indigo-700 border-solid w-[98px]">
+                  <div className="flex gap-2 items-center px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
                     <img
                       loading="lazy"
-                      src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/b8dc9f27b9c1b6675ba8db9fc0a9742daf6f75a9ba1a3fe27bd3ec30efbced76?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                      alt=""
-                      className="object-contain shrink-0 self-stretch my-auto w-5 aspect-square"
+                      src={countryCodeToFlagPath(tenderData.country)}
+                      alt={`${tenderData.country} flag`}
+                      className="object-contain shrink-0 self-stretch my-auto aspect-[1.29] w-[18px]"
                     />
-                    <span className="self-stretch my-auto">Like</span>
-                  </button>
+                    <div className="self-stretch my-auto">{tenderData.country}</div>
+                  </div>
                 </div>
+              </div>
+
+              <div className="flex gap-4 items-center text-sm shrink-0">
+                <div className="relative" ref={dropdownRef}>
+                  <button 
+                    className="flex overflow-hidden gap-2 items-center self-stretch h-full leading-none text-neutral-950"
+                    onClick={() => setShowBidStatus(!showBidStatus)}
+                    aria-expanded={showBidStatus}
+                    aria-haspopup="listbox"
+                  >
+                    {currentStatus ? (
+                      <>
+                        <img
+                          loading="lazy"
+                          src={currentStatus.icon}
+                          alt=""
+                          className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
+                        />
+                        <span className="self-stretch my-auto">{currentStatus.label}</span>
+                      </>
+                    ) : (
+                      <>
+                        <img
+                          loading="lazy"
+                          src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/9fb5aa1da55802f5907ee07448f531bff1b06f50ebf3e446efbc5e577f9cb97b?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+                          alt=""
+                          className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
+                        />
+                        <span className="self-stretch my-auto">Bid Status</span>
+                      </>
+                    )}
+                    <img
+                      loading="lazy"
+                      src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/16945e6630d6bd7aa37ef74f5e07f7c47910c9b5367a25462f3e7f21355cbe89?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+                      alt=""
+                      className="object-contain shrink-0 self-stretch my-auto w-3.5 aspect-square"
+                    />
+                  </button>
+                  {showBidStatus && (
+                    <div className="absolute top-full right-0 mt-1 z-50">
+                      <BidStatusList
+                        currentStatus={currentStatus?.label || ""}
+                        onStatusChange={handleStatusChange}
+                        className="border border-gray-200 rounded-lg"
+                        items={statusItems}
+                      />
+                    </div>
+                  )}
+                </div>
+                <button 
+                  onClick={handlePdfDownload}
+                  className="gap-2 self-stretch py-1.5 pr-2.5 pl-2.5 my-auto text-center rounded-lg border border-solid border-zinc-300 text-zinc-800 w-[123px]"
+                >
+                  Download PDF
+                </button>
+                <button className="flex gap-1.5 justify-center items-center self-stretch px-4 py-1.5 my-auto font-semibold text-center text-indigo-700 whitespace-nowrap bg-white rounded-lg border border-indigo-700 border-solid w-[98px]">
+                  <img
+                    loading="lazy"
+                    src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/b8dc9f27b9c1b6675ba8db9fc0a9742daf6f75a9ba1a3fe27bd3ec30efbced76?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+                    alt=""
+                    className="object-contain shrink-0 self-stretch my-auto w-5 aspect-square"
+                  />
+                  <span className="self-stretch my-auto">Like</span>
+                </button>
               </div>
             </section>
 
-            <section className="flex flex-col px-6 pb-6 w-full max-md:px-5 max-md:max-w-full">
-              <div className="flex flex-col w-full text-neutral-950 max-md:max-w-full">
-                <h2 className="text-xl font-semibold max-md:max-w-full">Description</h2>
-                <p className="p-6 mt-4 w-full text-base leading-6 rounded-lg border border-solid border-zinc-300 max-md:px-5 max-md:max-w-full">
-                  {tenderData.description}
-                </p>
-              </div>
+            <section className="mt-8">
+              <h2 className="text-xl font-semibold">Description</h2>
+              <p className="p-6 mt-4 text-base leading-6 rounded-lg border border-solid border-zinc-300 break-words">
+                {tenderData.description}
+              </p>
+            </section>
 
-              <div className="flex flex-wrap gap-6 items-center mt-8 w-full max-md:max-w-full">
-                <section className="flex flex-col grow shrink self-stretch my-auto min-w-[240px] w-[422px] max-md:max-w-full">
-                  <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full">
-                    Contract summary
-                  </h2>
-                  <ContractSummary data={contractSummaryData} />
-                </section>
-
-                <section className="flex flex-col grow shrink self-stretch my-auto min-w-[240px] w-[422px] max-md:max-w-full">
-                  <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full">
-                    Timeline
-                  </h2>
-                  <div className="flex flex-col justify-center items-start p-6 mt-4 w-full rounded-lg border border-solid border-stone-300 min-h-[296px] max-md:px-5 max-md:max-w-full">
-                    <Timeline items={timelineData} />
-                  </div>
-                </section>
-              </div>
-
-              <section className="flex flex-col mt-8 w-full max-md:max-w-full">
-                <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full">
-                  About the buyer
-                </h2>
-                <BuyerInfo data={buyerInfoData} />
+            <div className="flex flex-wrap gap-6 mt-8">
+              <section className="flex-1 min-w-[240px] max-w-full">
+                <h2 className="text-xl font-semibold">Contract summary</h2>
+                <ContractSummary data={contractSummaryData} />
               </section>
 
-              <section className="flex flex-col mt-8 w-full max-md:max-w-full">
-                <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full">
-                  Lots
-                </h2>
-                <div className="flex flex-col mt-4 w-full text-base max-md:max-w-full">
-                  {transformedLots.map((lot, index) => (
-                    <div key={index} className={index > 0 ? "mt-6" : ""}>
-                      <Lot lot={lot} />
-                    </div>
-                  ))}
+              <section className="flex-1 min-w-[240px] max-w-full">
+                <h2 className="text-xl font-semibold">Timeline</h2>
+                <div className="p-6 mt-4 rounded-lg border border-solid border-stone-300">
+                  <Timeline items={timelineData} />
                 </div>
               </section>
+            </div>
+
+            <section className="flex flex-col mt-8 w-full max-md:max-w-full">
+              <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full">
+                Buyers ({tenderData.buyers.length})
+              </h2>
+              <div className="flex flex-col mt-4 w-full text-base max-md:max-w-full">
+                {tenderData.buyers.map((buyer, index) => (
+                  <div key={index} className={index > 0 ? "mt-6" : ""}>
+                    <Buyer 
+                      number={index + 1}
+                      name={buyer.name}
+                      email={buyer.email}
+                      website={buyer.website}
+                      phone={buyer.phone}
+                      address={{
+                        city: buyer.address_city,
+                        street: buyer.address_street,
+                        postalCode: buyer.address_postal,
+                        countryCode: buyer.address_country
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="flex flex-col mt-8 w-full max-md:max-w-full">
+              <h2 className="text-xl font-semibold text-neutral-950 max-md:max-w-full">
+                Lots
+              </h2>
+              <div className="flex flex-col mt-4 w-full text-base max-md:max-w-full">
+                {transformedLots.map((lot, index) => (
+                  <div key={index} className={index > 0 ? "mt-6" : ""}>
+                    <Lot lot={lot} />
+                  </div>
+                ))}
+              </div>
             </section>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

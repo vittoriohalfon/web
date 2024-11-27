@@ -17,6 +17,7 @@ interface SpecificContractResponse {
     country: string;
     published: string;
     deadline: string;
+    attachmentUri: string;
     lots: Array<{
         lotId: string;
         title: string;
@@ -28,6 +29,7 @@ interface SpecificContractResponse {
         name: string;
         website: string;
         phone: string;
+        email: string;
         address_city: string;
         address_street: string;
         address_postal: string;
@@ -70,7 +72,8 @@ export async function POST(request: Request) {
         cn.currency_code as currency,
         rl.country_code as country,
         bn.issue_date as published,
-        cn.submission_deadline_date as deadline
+        cn.submission_deadline_date as deadline,
+        cn.attachment_uri
       FROM base_notices bn
       JOIN contract_notices cn ON bn.notice_id = cn.notice_id
       LEFT JOIN realized_locations rl ON bn.notice_id = rl.notice_id
@@ -91,10 +94,11 @@ export async function POST(request: Request) {
     `;
 
     const buyersQuery = `
-      SELECT 
+      SELECT DISTINCT ON (o.company_id)
         o.name AS organization_name,
         o.website_url AS organization_website,
         c.phone AS contact_phone,
+        c.email AS contact_email,
         a.city AS address_city,
         a.street_name AS address_street_name,
         a.postal_code AS address_postal_code,
@@ -114,7 +118,9 @@ export async function POST(request: Request) {
       ON 
         o.company_id = a.company_id
       WHERE 
-        no.notice_id = $1`;
+        no.notice_id = $1
+      ORDER BY 
+        o.company_id`;
 
     const [contractResult, lotsResult, buyersResult] = await Promise.all([
       db.query(contractQuery, [noticeId]),
@@ -137,6 +143,7 @@ export async function POST(request: Request) {
       country: contract.country,
       published: contract.published?.toISOString(),
       deadline: contract.deadline?.toISOString(),
+      attachmentUri: contract.attachment_uri || '',
       lots: lotsResult.rows.map(lot => ({
         lotId: lot.lot_id,
         title: decodeSpecialCharacters(lot.title),
@@ -148,6 +155,7 @@ export async function POST(request: Request) {
         name: decodeSpecialCharacters(buyer.organization_name) || '',
         website: buyer.organization_website || '',
         phone: buyer.contact_phone || '',
+        email: buyer.contact_email || '',
         address_city: buyer.address_city || '',
         address_street: buyer.address_street_name || '',
         address_postal: buyer.address_postal_code || '',

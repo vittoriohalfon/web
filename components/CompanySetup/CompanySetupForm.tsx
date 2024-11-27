@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CompanyInfo } from "./CompanyInfo";
 import { FormSection } from "./FormSection";
 import { ProgressIndicator } from "./ProgressIndicator";
-import { AutoFillButton } from "./AutoFillButton";
+import { AutoFillButton } from "../shared/AutoFillButton";
 import { TextAreaField } from "./TextAreaField";
 import { TermsCheckbox } from "./TermsCheckbox";
 import { SubmitButton } from "./SubmitButton";

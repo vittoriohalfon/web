@@ -10,5 +10,6 @@ export interface Tender {
   deadline?: string;
   country: string | null;
   id: string;
-  record_id: string;
+  notice_id: string;
+  isLiked: boolean;
 } 

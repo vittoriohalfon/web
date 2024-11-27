@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 interface AutoFillButtonProps {
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isLoading: boolean;
   disabled?: boolean;
 }

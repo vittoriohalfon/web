@@ -5,14 +5,13 @@ interface TimelineItem {
   }
   
   interface LotItem {
-    number: number;
+    lotId: string;
+    number?: number;
     title: string;
     description: string;
+    procurementType: string;
+    estimatedValue: number;
     isExpanded?: boolean;
-    status?: string;
-    procurementType?: string;
-    estimatedValue?: string;
-    duration?: string;
   }
   
   interface ContractSummary {
@@ -20,7 +19,7 @@ interface TimelineItem {
     lots: number;
     value: string;
     status: string;
-    submissionUrl: string;
+    submissionUrl: string | null;
   }
   
   interface BuyerInfo {

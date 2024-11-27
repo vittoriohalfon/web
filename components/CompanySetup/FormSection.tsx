@@ -1,7 +1,7 @@
 import React from "react";
 import { InputField } from "./InputField";
 import { SelectField } from "./SelectField";
-import { CheckboxField } from "./CheckboxField";
+import { CheckboxField } from "../shared/CheckboxField";
 import type { FormData, EditableFields, DropdownOptions } from "@/components/CompanySetup/types";
 
 interface FormSectionProps {
@@ -42,7 +42,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
         placeholder="Select Annual Turnover Estimation"
       />
       <SelectField
-        label="What is your primary location of business instead of the geographic location of business?"
+        label="What is your primary location of business?"
         value={formData.primaryLocation}
         onChange={(value) => updateFormField("primaryLocation", value)}
         options={dropdownOptions.locations}

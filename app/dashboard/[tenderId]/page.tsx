@@ -15,4 +15,4 @@ export const metadata: Metadata = {
 export default async function TenderDetailsPage({ params }: Props) {
   const { tenderId } = await params;
   return <TenderDetails tenderId={tenderId} />;
-} 
+}

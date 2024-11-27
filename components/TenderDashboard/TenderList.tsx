@@ -57,6 +57,7 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
                 day: 'numeric'
               }) : 'N/A',
               dueIn: tender.deadline ? getDaysRemaining(new Date(tender.deadline)) : 'N/A',
+              isLiked: tender.isLiked,
             }}
           />
         );

@@ -1,8 +1,8 @@
 "use client";
 import { builder, Builder } from "@builder.io/react";
 import { AchievementGoal } from "./components/CompanySetup/AchievementGoal";
-import { AutoFillButton } from "./components/CompanySetup/AutoFillButton";
-import { CheckboxField } from "./components/CompanySetup/CheckboxField";
+import { AutoFillButton } from "./components/shared/AutoFillButton";
+import { CheckboxField } from "./components/shared/CheckboxField";
 import { CompanyInfo } from "./components/CompanySetup/CompanyInfo";
 import { CompanySetupForm } from "./components/CompanySetup/CompanySetupForm";
 import { CountryFilter } from "./components/TenderDashboard/CountryFilter";
@@ -11,7 +11,9 @@ import { FileUploader } from "./components/CompanySetup/FileUploader";
 import { FilterBar } from "./components/TenderDashboard/FilterBar";
 import { FilterDropdown } from "./components/TenderDashboard/FilterDropdown";
 import { FormSection } from "./components/CompanySetup/FormSection";
+import { Header } from "./components/shared/Header";
 import { InputField } from "./components/CompanySetup/InputField";
+import { Lot } from "./components/TenderDetails/components/Lot";
 import { NavigationButtons } from "./components/CompanySetup/NavigationButtons";
 import { PastPerformance } from "./components/CompanySetup/PastPerformance";
 import { ProgressBar } from "./components/CompanySetup/ProgressBar";
@@ -401,4 +403,38 @@ Builder.registerComponent(Sidebar, {
 
 Builder.registerComponent(Sidebar, {
   name: "Sidebar",
+});
+
+Builder.registerComponent(Lot, {
+  name: "Lot",
+  inputs: [
+    {
+      name: "lot",
+      type: "object",
+      hideFromUI: true,
+      meta: {
+        ts: "LotItem",
+      },
+      required: true,
+    },
+  ],
+});
+
+Builder.registerComponent(Header, {
+  name: "Header",
+  inputs: [
+    {
+      name: "showNav",
+      type: "boolean",
+    },
+    {
+      name: "userCreatedAt",
+      type: "object",
+      hideFromUI: true,
+      meta: {
+        ts: "Date",
+      },
+      required: true,
+    },
+  ],
 });
