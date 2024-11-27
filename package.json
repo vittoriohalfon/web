@@ -26,8 +26,6 @@
     "prisma": "^5.22.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-markdown": "^9.0.1",
-    "rehype-raw": "^7.0.0",
     "stripe": "^17.4.0"
   },
   "devDependencies": {
