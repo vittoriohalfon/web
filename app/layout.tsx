@@ -11,8 +11,22 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Your App Name",
-  description: "Your app description",
+  title: "Skim Application",
+  description: "Skim is a tender management software that helps you manage your tenders and bids. It is a platform that allows you to create, manage, and track your tenders and bids.",
+  icons: {
+    icon: [
+      { url: '/favicon/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon/favicon.ico', rel: 'shortcut icon' },
+    ],
+    apple: [
+      { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/favicon/site.webmanifest',
+  appleWebApp: {
+    title: 'Skim Application',
+  },
 };
 
 export default function RootLayout({
