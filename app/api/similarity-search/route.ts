@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { Company } from '@prisma/client';
 
+const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
 interface SearchResult {
   notice_id: string;
   title: string;
@@ -78,7 +80,7 @@ async function fetchContractDetails(noticeIds: string[], headers: Headers): Prom
       throw new Error('No authorization header present');
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/aurora/contract-details`, {
+    const response = await fetch(`${DOMAIN}/api/aurora/contract-details`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
