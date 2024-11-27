@@ -53,7 +53,7 @@ const navItems = [
   {
     icon: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/501daf0f5e7ebe4b04690fdbdf683e377210318b121a880722a2e28a083d2683?apiKey=27ce83af570848e9b22665bc31a03bc0&",
     label: "My Tenders",
-    path: "/my-tenders",
+    path: "/liked-tenders",
   },
   {
     icon: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/3d298ce2bb58f794c4e52b12b6cd4fca843f4dbe88f195606449c94caaac4de3?apiKey=27ce83af570848e9b22665bc31a03bc0&",

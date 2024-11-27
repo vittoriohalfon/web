@@ -5,7 +5,7 @@ export { FilterBar } from "./FilterBar";
 export { FilterDropdown } from "./FilterDropdown";
 export { CountryFilter } from "./CountryFilter";
 export { TenderList } from "./TenderList";
-export { TenderCard } from "./TenderCard";
+export { TenderCard } from "../shared/TenderCard";
 export { Sidebar } from "../shared/Sidebar";
 export { Header } from "../shared/Header";
 export * from './TenderCardSkeleton';

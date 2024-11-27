@@ -71,7 +71,7 @@ export const CompanyProfile: React.FC = () => {
   async function fetchProfile() {
     try {
       setLoading(true);
-      const response = await fetch("/api/get-profile");
+      const response = await fetch("/api/user/get-profile");
       
       if (!response.ok) {
         throw new Error("Failed to fetch profile");
@@ -92,7 +92,7 @@ export const CompanyProfile: React.FC = () => {
     try {
       setSaving(true);
       const apiData = formatProfileForApi(data);
-      const response = await fetch("/api/update-profile", {
+      const response = await fetch("/api/user/update-profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

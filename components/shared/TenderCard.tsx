@@ -32,7 +32,7 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
     
     try {
       const response = await fetch('/api/like-tender', {
-        method: 'POST',
+        method: isLiked ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -42,12 +42,12 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to like tender');
+        throw new Error(`Failed to ${isLiked ? 'unlike' : 'like'} tender`);
       }
 
       setIsLiked(!isLiked);
     } catch (error) {
-      console.error('Error liking tender:', error);
+      console.error('Error updating tender like status:', error);
     } finally {
       setIsLoading(false);
     }

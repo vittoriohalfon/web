@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { TenderCard } from "./TenderCard";
+import { TenderCard } from "../shared/TenderCard";
 import { TenderCardSkeleton } from "./TenderCardSkeleton";
 import { Tender } from "@/types/tender";
 import { countryCodeToFlagPath } from "@/utils/codeConvertor";
