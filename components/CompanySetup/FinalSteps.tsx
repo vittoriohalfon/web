@@ -78,7 +78,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
 
       console.log('Submitting company setup data:', submitData);
       
-      const response = await fetch('/api/save-company-setup', {
+      const response = await fetch('/api/user/save-company-setup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
