@@ -23,7 +23,12 @@ export const TermsCheckbox: React.FC<TermsCheckboxProps> = ({
         </div>
         <label className="self-stretch my-auto text-sm text-neutral-950">
           <span className="text-zinc-700">I accept the</span>{" "}
-          <a href="#" className="underline">
+          <a
+            href="https://justskim.notion.site/Terms-of-Service-14828f7d874c80e090f9f781df7efd5d?pvs=74"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Terms of Service
           </a>
         </label>
