@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import { CountryItem } from "./CountryItem";
 
 interface Country {
@@ -191,17 +190,15 @@ export const CountryFilter: React.FC = () => {
             <div className="flex gap-2 items-center self-stretch my-auto">
               {displayedCountries.map((countryName) => {
                 const country = countries.find(c => c.name === countryName);
-                return country ? (
+                return country && country.flag ? (
                   <div
                     key={country.code}
                     className="flex gap-2 items-center self-stretch px-2 py-1 my-auto rounded border border-solid border-zinc-300 min-h-[26px]"
                   >
-                    {country.flag?.startsWith('/') ? (
-                      <Image
+                    {country.flag.startsWith('/') ? (
+                      <img
                         src={country.flag}
                         alt={`${country.name} flag`}
-                        width={18}
-                        height={14}
                         className="object-contain"
                       />
                     ) : (

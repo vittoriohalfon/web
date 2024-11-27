@@ -137,7 +137,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
     }
   };
 
-  const handleFileUploads = async (files: any[], companyId: number) => {
+  const handleFileUploads = async (files: { name: string; content: string; size: number; type: string; }[], companyId: number) => {
     console.log('Preparing files for upload:', files.length);
     
     if (!Array.isArray(files)) {

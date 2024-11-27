@@ -33,6 +33,7 @@ export default function CompanySetupClient() {
 
   const handleFileUpload = async (files: File[]) => {
     try {
+      console.log('File upload started: ', files);
       // Here you would typically upload the files to your server
       // For now, we'll just simulate a successful upload
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -63,6 +64,7 @@ export default function CompanySetupClient() {
           onComplete={handleComplete}
         />
       )}
+      <p>Let&apos;s set up your organization.</p>
     </div>
   );
 } 

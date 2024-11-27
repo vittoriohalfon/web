@@ -42,6 +42,7 @@ export const FilterBar: React.FC = () => {
           label="Contract Value (€)"
           options={priceRanges}
           onSelect={setSelectedPrice}
+          selected={selectedPrice}
         />
         <CountryFilter />
         <div 

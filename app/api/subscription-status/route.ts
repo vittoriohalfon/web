@@ -24,7 +24,7 @@ export async function GET() {
     }
 
     const hasActiveSubscription = user.subscriptions.some(
-      sub => sub.status === "active"
+      (sub: { status: string }) => sub.status === "active"
     );
 
     return NextResponse.json({ hasActiveSubscription });

@@ -2,7 +2,7 @@ import React from "react";
 import { InputField } from "./InputField";
 import { SelectField } from "./SelectField";
 import { CheckboxField } from "../shared/CheckboxField";
-import type { FormData, EditableFields, DropdownOptions } from "@/components/CompanySetup/types";
+import type { FormData, DropdownOptions } from "@/components/CompanySetup/types";
 
 interface FormSectionProps {
   formData: FormData;

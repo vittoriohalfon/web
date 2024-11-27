@@ -33,7 +33,7 @@ export async function POST() {
 
     // Check if user already has an active subscription
     const hasActiveSubscription = user.subscriptions.some(
-      sub => sub.status === "active"
+      (sub: { status: string }) => sub.status === "active"
     );
 
     if (hasActiveSubscription) {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ProfileForm } from "./ProfileForm";
 import { Header } from "../shared/Header";
 import { Sidebar } from "../shared/Sidebar";
@@ -24,7 +24,7 @@ interface CompanyData {
 
 export const CompanyProfile: React.FC = () => {
   const [profile, setProfile] = useState<FormData | null>(null);
-  const [userCreatedAt, setUserCreatedAt] = useState<string>('');
+  const [userCreatedAt, setUserCreatedAt] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [saved, setSaved] = useState<boolean>(false);
@@ -33,7 +33,7 @@ export const CompanyProfile: React.FC = () => {
 
   const formatCompanyData = (data: CompanyData): FormData => {
     setUserCreatedAt(data.userCreatedAt);
-    
+
     return {
       companyName: data.name,
       website: data.website || "",
@@ -64,15 +64,11 @@ export const CompanyProfile: React.FC = () => {
     userCreatedAt: userCreatedAt,
   });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/user/get-profile");
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch profile");
       }
@@ -86,7 +82,11 @@ export const CompanyProfile: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   async function updateProfile(data: FormData) {
     try {
@@ -107,9 +107,9 @@ export const CompanyProfile: React.FC = () => {
       const updatedData = await response.json();
       setProfile(formatCompanyData(updatedData));
       setSaved(true);
-      
+
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push("/dashboard");
       }, 1000);
     } catch (err) {
       setError("Failed to save profile");

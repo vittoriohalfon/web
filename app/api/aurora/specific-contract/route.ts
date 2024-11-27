@@ -37,16 +37,6 @@ interface SpecificContractResponse {
     }>;   
 }
 
-type Buyer = {
-  organization_name: string;
-  organization_website: string | null;
-  contact_phone: string | null;
-  address_city: string | null;
-  address_street_name: string | null;
-  address_postal_code: string | null;
-  address_country_code: string | null;
-};
-
 export async function POST(request: Request) {
   try {
     const { userId } = await auth();

@@ -33,7 +33,7 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
       // Convert files to the required format with base64 content
       const processedFiles = await Promise.all(
         files.map(async (file) => {
-          return new Promise<any>((resolve, reject) => {
+          return new Promise<{ name: string; size: number; type: string; content: string | ArrayBuffer | null; }>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => {
               resolve({
@@ -140,12 +140,12 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
                   Capabilities and Past Performance
                 </h1>
                 <p className="mt-2 text-base leading-5 text-zinc-600 max-md:max-w-full">
-                  Upload files showcasing your company's capabilities and past
+                  Upload files showcasing your company&apos;s capabilities and past
                   work to help Skim find new opportunities. 
                   Upload files showcasing your capabilities, financial documentation, 
                   insurance, and compliance certifications (e.g., ISO 9001) to 
                   streamline and strengthen your tender applications. 
-                  Don't have them? Skim can walk you through the process
+                  Don&apos;t have them? Skim can walk you through the process
                 </p>
               </div>
               <FileUploader

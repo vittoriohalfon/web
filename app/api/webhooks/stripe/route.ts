@@ -27,20 +27,24 @@ export async function POST(req: Request) {
         signature,
         webhookSecret
       );
-    } catch (error: any) {
-      return new NextResponse(`Webhook Error: ${error?.message || "Unknown error"}`, { status: 400 });
+    } catch (error) {
+      const stripeError = error as Error;
+      return new NextResponse(`Webhook Error: ${stripeError.message || "Unknown error"}`, { status: 400 });
     }
 
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (event.type === "checkout.session.completed") {
-      const subscription = await stripe.subscriptions.retrieve(
-        session.subscription as string
-      );
+      const subscriptionId = session.subscription as string;
+      if (!subscriptionId || !session.metadata?.userId) {
+        return new NextResponse("Missing subscription or user ID metadata", { status: 400 });
+      }
+
+      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
       await prisma.subscription.create({
         data: {
-          userId: parseInt(session.metadata?.userId!),
+          userId: parseInt(session.metadata.userId, 10),
           stripeSubscriptionId: subscription.id,
           status: subscription.status,
           priceId: subscription.items.data[0].price.id,
@@ -52,7 +56,7 @@ export async function POST(req: Request) {
 
     if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object as Stripe.Subscription;
-      
+
       await prisma.subscription.update({
         where: {
           stripeSubscriptionId: subscription.id,
@@ -74,4 +78,4 @@ export const config = {
   api: {
     bodyParser: false,
   },
-}; 
+};

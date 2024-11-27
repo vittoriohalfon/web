@@ -1,28 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-
 interface FilterDropdownProps {
   label: string;
-  options?: string[];
-  placeholder?: string;
-  onSelect?: (value: string) => void;
-  disabled?: boolean;
+  options: string[];
+  onSelect?: (value: string | null) => void;
+  selected?: string | null;
 }
 
 export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   label,
   options = [],
-  placeholder = "Select an option",
   onSelect,
-  disabled = false,
+  selected = null,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<string | null>(selected);
 
   const handleSelect = (value: string) => {
-    if (disabled) return;
-    setSelected(value);
+    setSelectedPrice(value);
     onSelect?.(value);
     setIsOpen(false);
   };
@@ -30,13 +26,11 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   return (
     <div className="relative">
       <div
-        onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`flex overflow-hidden flex-1 shrink justify-between items-center self-stretch px-2 py-2.5 my-auto bg-gray-50 rounded-lg border border-solid shadow-sm basis-4 border-zinc-300 min-h-[44px] min-w-[240px] ${
-          disabled ? "" : "cursor-pointer"
-        }`}
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex overflow-hidden flex-1 shrink justify-between items-center self-stretch px-2 py-2.5 my-auto bg-gray-50 rounded-lg border border-solid shadow-sm basis-4 border-zinc-300 min-h-[44px] min-w-[240px] cursor-pointer`}
       >
         <div className="flex-1 shrink self-stretch my-auto basis-0">
-          {selected || label}
+          {selectedPrice || label}
         </div>
         <img
           loading="lazy"
@@ -48,7 +42,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
         />
       </div>
       
-      {isOpen && !disabled && (
+      {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white border border-zinc-300 rounded-lg shadow-lg">
           {options.map((option) => (
             <div

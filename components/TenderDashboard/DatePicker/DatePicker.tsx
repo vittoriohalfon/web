@@ -23,7 +23,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({ onDateSelect }) => {
     onDateSelect(null);
   };
 
-  const handleMonthChange = (offset: number, calendarIndex: number) => {
+  const handleMonthChange = (offset: number) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + offset);
     setCurrentDate(newDate);

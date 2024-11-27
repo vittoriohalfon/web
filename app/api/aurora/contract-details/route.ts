@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json() as ContractRequest;
     
     // Extract the contracts array from the body
     const { contracts } = body;
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
     // Log the query results
     console.log('Query results:', result.rows);
 
-    const contractDetails = result.rows.map(row => {
+    const contractDetails: ContractDetailsResponse[] = result.rows.map(row => {
       // Find the original contract request to get the lotId
       const originalContract = contracts.find(c => c.noticeId === row.notice_id);
       const record_id = originalContract?.lotId ? 

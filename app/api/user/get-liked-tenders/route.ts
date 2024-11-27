@@ -30,7 +30,7 @@ export async function GET() {
       },
     });
 
-    const noticeIds = likedContracts.map(contract => contract.contractNoticeId);
+    const noticeIds = likedContracts.map((contract: { contractNoticeId: string }) => contract.contractNoticeId);
 
     return NextResponse.json({ noticeIds });
   } catch (error) {

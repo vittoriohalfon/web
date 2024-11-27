@@ -32,6 +32,11 @@ const DEFAULT_FORM_DATA: FormData = {
   geographicFocus: ''
 };
 
+interface MappedResult {
+  fieldType: string;
+  content: string;
+}
+
 interface ProfileFormProps {
   profile: FormData | null; // Update to allow null
   loading: boolean;
@@ -128,7 +133,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       
       if (results && results.length > 0) {
         // Map the results based on fieldType
-        const mappedData = results.reduce((acc: any, result: any) => {
+        const mappedData = results.reduce((acc: FormData, result: MappedResult) => {
           switch (result.fieldType) {
             case 'Determine the specific industry or sector of the given company':
               acc.industrySector = result.content;
@@ -176,7 +181,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                 Company Profile
               </h1>
               <p className="mt-2 text-base text-zinc-600 max-md:max-w-full">
-                Let's set up your organization.
+                Let&apos;s set up your organization.
               </p>
             </div>
             <div className="flex flex-wrap gap-4 items-start mt-8 w-full text-neutral-950 max-md:max-w-full">

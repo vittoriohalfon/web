@@ -8,6 +8,7 @@ interface SearchResult {
   title: string;
   description: string;
   estimated_value: number;
+  country: string;
   currency: string;
   deadline: string;
   published: string;
@@ -69,7 +70,7 @@ async function searchContracts(user: { company: Company | null }): Promise<Searc
   }
 }
 
-async function fetchContractDetails(noticeIds: string[], headers: Headers) {
+async function fetchContractDetails(noticeIds: string[], headers: Headers): Promise<SearchResult[]> {
   try {
     const authHeader = headers.get('Authorization');
     
@@ -134,7 +135,7 @@ export async function POST(request: Request) {
     // Pass the headers to fetchContractDetails
     const contractDetails = await fetchContractDetails(uniqueNoticeIds, headers);
     
-    const formattedContracts = contractDetails.map((contract: any) => ({
+    const formattedContracts = contractDetails.map((contract: SearchResult) => ({
       notice_id: contract.notice_id,
       title: contract.title,
       description: contract.description,

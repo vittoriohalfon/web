@@ -1,7 +1,9 @@
-import BuilderDevTools from "@builder.io/dev-tools/next";
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = BuilderDevTools()({
+const nextConfig: NextConfig = {
+  images: {
+    domains: ['cdn.builder.io'],
+  },
   webpack(config: any) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -9,6 +11,6 @@ const nextConfig: NextConfig = BuilderDevTools()({
     });
     return config;
   },
-});
+};
 
 export default nextConfig;

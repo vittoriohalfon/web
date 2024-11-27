@@ -9,15 +9,7 @@ import { TextAreaField } from "./TextAreaField";
 import { TermsCheckbox } from "./TermsCheckbox";
 import { SubmitButton } from "./SubmitButton";
 import { FormData, EditableFields, DropdownOptions } from "./types";
-import { useRouter } from "next/navigation";
 import { saveToSessionStorage, getFromSessionStorage } from '@/utils/sessionStorage';
-
-interface FormSectionProps {
-  formData: FormData;
-  dropdownOptions: DropdownOptions;
-  updateFormField: (field: keyof FormData, value: string | boolean) => void;
-  updateEditableField: (field: keyof EditableFields, value: string) => void;
-}
 
 interface CompanySetupFormProps {
   onNext: () => void;
@@ -88,7 +80,6 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [customLocation, setCustomLocation] = useState<string>("");
 
   const [editableFields, setEditableFields] = useState<EditableFields>({
     companyName: "",
@@ -100,8 +91,6 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
     uniqueSellingPoint: "",
     geographic: "",
   });
-
-  const router = useRouter();
 
   // Load saved data from session storage on component mount
   useEffect(() => {
@@ -240,7 +229,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
                   Welcome to Skim!
                 </h1>
                 <p className="mt-2 text-base text-zinc-600 max-md:max-w-full">
-                  Let's set up your organization.
+                  Let&apos;s set up your organization.
                 </p>
                 <FormSection
                   formData={formData}
