@@ -44,8 +44,6 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
   return (
     <div className="flex flex-col gap-4 p-6 w-full max-md:px-5 max-md:max-w-full">
       {tenders.map((tender, index) => {
-        console.log(`Tender ${index} country:`, tender.country);
-        console.log(`Tender budget:`, { amount: tender.amount, currency: tender.currency });
         return (
           <TenderCard 
             key={index} 
