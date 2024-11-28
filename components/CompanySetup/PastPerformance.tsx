@@ -23,6 +23,7 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
 }) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isServerUploading, setIsServerUploading] = useState(false);
 
   useEffect(() => {
     // Clean up previews when component unmounts
@@ -36,6 +37,7 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
   }, [files]);
 
   const handleFileSelect = async (newFiles: File[]) => {
+    setIsServerUploading(true);
     try {
       // Create preview URLs for the files
       const filesWithPreviews = newFiles.map(file => Object.assign(file, {
@@ -67,6 +69,10 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
     } catch (error) {
       console.error('Error processing files:', error);
       alert('Error processing files. Please try again.');
+      // Remove the files that failed to upload
+      setFiles(prev => prev.filter(f => !newFiles.includes(f)));
+    } finally {
+      setIsServerUploading(false);
     }
   };
 
@@ -142,7 +148,7 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
               onPrevious={onPrevious}
               onSkip={onSkip}
               onUpload={handleUpload}
-              isUploadDisabled={files.length === 0 || isUploading}
+              isUploadDisabled={files.length === 0 || isUploading || isServerUploading}
               isUploading={isUploading}
             />
           </div>

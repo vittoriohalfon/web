@@ -15,6 +15,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
   onComplete,
 }) => {
   const { user, isLoaded } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -50,6 +51,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const response = await fetch('/api/user/complete-setup', {
         method: 'POST',
@@ -71,6 +73,8 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
     } catch (error) {
       console.error('Error completing setup:', error);
       alert('Failed to complete setup. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -156,7 +160,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
               onPrevious={handlePrevious}
               onUpload={handleComplete}
               isUploadDisabled={!selectedFeedbackSource || !selectedGoal}
-              isUploading={false}
+              isUploading={isSubmitting}
               uploadButtonText="Complete"
             />
           </div>

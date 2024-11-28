@@ -15,7 +15,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   onUpload,
   isUploadDisabled,
   isUploading,
-  uploadButtonText = "Upload"
+  uploadButtonText = "Continue"
 }) => {
   return (
     <div className="flex flex-wrap gap-10 justify-between items-center mt-6 w-full text-base text-center whitespace-nowrap max-md:max-w-full">
@@ -44,11 +44,11 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
                   backgroundColor: "var(--Primary-700, #4228E2)",
                 }),
           }}
-          disabled={isUploadDisabled}
+          disabled={isUploadDisabled || isUploading}
           onClick={onUpload}
         >
           <span className="self-stretch my-auto">
-            {isUploading ? "Uploading..." : uploadButtonText}
+            {isUploading ? `${uploadButtonText}ing...` : uploadButtonText}
           </span>
         </button>
       </div>
