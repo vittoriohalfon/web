@@ -33,7 +33,10 @@ export async function POST(req: Request) {
         uniqueSellingPoint = null,
         geographic = null,
       } = {},
-      finalSteps: { goal = null } = {},
+      finalSteps: { 
+        goal = null,
+        feedbackSource = null
+      } = {},
     } = data;
 
     // Upsert user
@@ -65,13 +68,12 @@ export async function POST(req: Request) {
       },
     });
 
-    // Create user preference if goal is provided
-    if (goal) {
-      await prisma.userPreference.create({
-        data: {
-          userId: user.id,
-          goal,
-        },
+    // Create user preference if goal or feedback source is provided
+    if (goal || feedbackSource) {
+      await prisma.userPreference.upsert({
+        where: { userId: user.id },
+        update: { goal, referralSource: feedbackSource },
+        create: { userId: user.id, goal, referralSource: feedbackSource },
       });
     }
 
