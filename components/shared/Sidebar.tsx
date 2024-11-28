@@ -107,10 +107,12 @@ export const Sidebar: React.FC = () => {
     };
   }, []);
 
+  /*
   const handleSubscription = () => {
     console.log("Subscription clicked");
     setIsDropdownOpen(false);
   };
+  */
 
   return (
     <aside className="flex fixed top-0 left-0 z-10 flex-col px-4 pt-4 pb-8 h-auto min-h-screen bg-indigo-700 min-w-[240px] w-[312px] max-md:pb-24">
