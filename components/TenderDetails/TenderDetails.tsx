@@ -126,6 +126,8 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
     return <div className="flex justify-center items-center min-h-screen">No data found</div>;
   }
 
+  const countryCode = tenderData.country || tenderData.buyers[0]?.address_country;
+
   const transformedLots = tenderData.lots.map((lot, index) => ({
     lotId: lot.lotId,
     number: index + 1,
@@ -229,14 +231,14 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
                   <div className="gap-2 self-stretch px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
                     {tenderData.currency} {tenderData.estimatedValue?.toLocaleString() ?? 'N/A'}
                   </div>
-                  <div className="flex gap-2 items-center px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
+                  <div className="flex items-center gap-2 self-stretch px-2 py-1 whitespace-nowrap rounded border border-solid border-zinc-300 min-h-[26px]">
                     <img
                       loading="lazy"
-                      src={countryCodeToFlagPath(tenderData.country)}
-                      alt={`${tenderData.country} flag`}
-                      className="object-contain shrink-0 self-stretch my-auto aspect-[1.29] w-[18px]"
+                      src={countryCodeToFlagPath(countryCode)}
+                      alt={`${countryCode} flag`}
+                      className="w-[18px] h-auto"
                     />
-                    <div className="self-stretch my-auto">{tenderData.country}</div>
+                    <div className="text-xs font-medium leading-none">{countryCode}</div>
                   </div>
                 </div>
               </div>

@@ -435,7 +435,8 @@ Copy code
       "match_percentage": 85,
       "published": "2024-01-01",
       "lot_count": 2,
-      "deadline": "2024-12-31"
+      "deadline": "2024-12-31",
+      "is_liked": true
     }
   ]
 }

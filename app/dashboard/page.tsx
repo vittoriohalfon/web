@@ -3,7 +3,7 @@
 import { TenderDashboard } from "@/components/TenderDashboard";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { Tender } from "@/types/tender";
+import { Tender, ApiContract } from "@/types/tender";
 
 export default function DashboardPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
@@ -29,7 +29,7 @@ export default function DashboardPage() {
         }
 
         const data = await response.json();
-        const mappedTenders = (data.contracts || []).map((tender: any) => ({
+        const mappedTenders = (data.contracts || []).map((tender: ApiContract) => ({
           ...tender,
           isLiked: tender.is_liked
         }));
