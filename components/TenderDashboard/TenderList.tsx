@@ -45,7 +45,7 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
                 ? countryCodeToFlagPath(tender.country)
                 : '/flags/eu.svg',
               lots: tender.lot_count,
-              status: tender.status === 'green' ? 'Active' : tender.status === 'yellow' ? 'Pending' : 'Closed',
+              status: 'Open',
               posted: new Date(tender.published).toLocaleDateString('en-US', { 
                 year: 'numeric',
                 month: 'long',

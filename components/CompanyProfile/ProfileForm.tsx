@@ -75,8 +75,8 @@ const InfoTooltip: React.FC = () => {
       <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap">
         If you must change your website, please{' '}
         <a 
-          href="xxx.com" 
-          target="_blank" 
+          href="mailto:justin@justskim.ai" 
+          target="_blank"
           rel="noopener noreferrer"
           className="text-blue-300 hover:text-blue-200 underline"
         >

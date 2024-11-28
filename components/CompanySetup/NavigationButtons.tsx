@@ -2,7 +2,7 @@ import React from "react";
 
 interface NavigationButtonsProps {
   onPrevious: () => void;
-  onSkip: () => void;
+  onSkip?: () => void;
   onUpload: () => void;
   isUploadDisabled: boolean;
   isUploading: boolean;
@@ -26,12 +26,14 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
         Previous
       </button>
       <div className="flex gap-4 items-center self-stretch my-auto">
-        <button
-          className="gap-2 self-stretch px-4 py-2.5 my-auto text-indigo-700 rounded-lg border border-indigo-700 border-solid"
-          onClick={onSkip}
-        >
-          Skip
-        </button>
+        {onSkip && (
+          <button
+            className="gap-2 self-stretch px-4 py-2.5 my-auto text-indigo-700 rounded-lg border border-indigo-700 border-solid"
+            onClick={onSkip}
+          >
+            Skip
+          </button>
+        )}
         <button
           className="flex gap-2 justify-center items-center self-stretch px-4 py-2.5 my-auto text-white bg-indigo-200 rounded-lg border border-indigo-50 border-solid"
           style={{

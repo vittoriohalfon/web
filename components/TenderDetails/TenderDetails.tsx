@@ -262,7 +262,7 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
                           alt=""
                           className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
                         />
-                        <span className="self-stretch my-auto">Bid Status</span>
+                        <span className="self-stretch my-auto">Set the Status</span>
                       </>
                     )}
                     <img

@@ -35,10 +35,10 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
   ];
 
   const goals = [
-    "Win more government contracts",
-    "Expand business reach",
-    "Increase revenue",
-    "Improve tender success rate",
+    "Discover more tender opportunities",
+    "Store all my tender information in one place",
+    "Bid writing services and assistance",
+    "Apply for tenders in different countries",
     "Other",
   ];
 
@@ -212,7 +212,6 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
               <div className="flex flex-col gap-6 mt-8">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-neutral-950">
-                    What industry are you primarily in?
                   </label>
                   <select
                     value={selectedFeedbackSource}
@@ -240,7 +239,6 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-neutral-950">
-                    What do you hope to achieve with Skim?
                   </label>
                   <select
                     value={selectedGoal}
@@ -252,7 +250,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
                     }}
                   >
                     <option value="" className="text-neutral-500">
-                      Select Your Goal
+                      What do you hope to achieve with Skim?
                     </option>
                     {goals.map((goal) => (
                       <option 
@@ -269,7 +267,6 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
             </section>
             <NavigationButtons
               onPrevious={handlePrevious}
-              onSkip={handleComplete}
               onUpload={handleComplete}
               isUploadDisabled={!selectedFeedbackSource || !selectedGoal}
               isUploading={false}
