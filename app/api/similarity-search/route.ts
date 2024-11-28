@@ -24,7 +24,6 @@ interface SearchApiResponse {
 async function searchContracts(user: { company: Company | null }): Promise<SearchApiResponse[]> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
-    console.log('API URL:', apiUrl);
 
     if (!apiUrl) {
       throw new Error('API Gateway URL is not defined');
