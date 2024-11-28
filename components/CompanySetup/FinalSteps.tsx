@@ -23,16 +23,15 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
     window.scrollTo(0, 0);
   }, []);
 
-  const [selectedIndustry, setSelectedIndustry] = useState<string>("");
+  const [selectedFeedbackSource, setSelectedFeedbackSource] = useState<string>("");
   const [selectedGoal, setSelectedGoal] = useState<string>("");
 
-  const industries = [
-    "Technology",
-    "Healthcare",
-    "Construction",
-    "Education",
-    "Manufacturing",
-    "Other",
+  const feedbackSources = [
+    "Word of Mouth",
+    "Google",
+    "Email",
+    "Social Media",
+    "Other"
   ];
 
   const goals = [
@@ -47,7 +46,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
   useEffect(() => {
     const savedData = getFromSessionStorage();
     if (savedData?.finalSteps) {
-      setSelectedIndustry(savedData.finalSteps.industry);
+      setSelectedFeedbackSource(savedData.finalSteps.feedbackSource);
       setSelectedGoal(savedData.finalSteps.goal);
     }
   }, []);
@@ -70,7 +69,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
         companySetup: allData?.companySetup,
         editableFields: allData?.editableFields,
         finalSteps: {
-          industry: selectedIndustry,
+          feedbackSource: selectedFeedbackSource,
           goal: selectedGoal
         },
         pastPerformance: allData?.pastPerformance
@@ -185,7 +184,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
     saveToSessionStorage({
       ...getFromSessionStorage(),
       finalSteps: {
-        industry: selectedIndustry,
+        feedbackSource: selectedFeedbackSource,
         goal: selectedGoal
       },
       currentStep: 'finalSteps'
@@ -216,24 +215,24 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
                     What industry are you primarily in?
                   </label>
                   <select
-                    value={selectedIndustry}
-                    onChange={(e) => setSelectedIndustry(e.target.value)}
+                    value={selectedFeedbackSource}
+                    onChange={(e) => setSelectedFeedbackSource(e.target.value)}
                     className="px-3.5 py-2.5 text-base bg-white rounded-lg border border-solid border-zinc-300 text-neutral-900"
                     style={{
-                      color: selectedIndustry ? '#171717' : '#525252',
-                      fontWeight: selectedIndustry ? '500' : '400'
+                      color: selectedFeedbackSource ? '#171717' : '#525252',
+                      fontWeight: selectedFeedbackSource ? '500' : '400'
                     }}
                   >
                     <option value="" className="text-neutral-500">
-                      Select Industry Type
+                      How did you hear about Skim?
                     </option>
-                    {industries.map((industry) => (
+                    {feedbackSources.map((feedbackSource) => (
                       <option 
-                        key={industry} 
-                        value={industry}
+                        key={feedbackSource} 
+                        value={feedbackSource}
                         className="text-neutral-900 font-medium"
                       >
-                        {industry}
+                        {feedbackSource}
                       </option>
                     ))}
                   </select>
@@ -272,7 +271,7 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
               onPrevious={handlePrevious}
               onSkip={handleComplete}
               onUpload={handleComplete}
-              isUploadDisabled={!selectedIndustry || !selectedGoal}
+              isUploadDisabled={!selectedFeedbackSource || !selectedGoal}
               isUploading={false}
               uploadButtonText="Complete"
             />

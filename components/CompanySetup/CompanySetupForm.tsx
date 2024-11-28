@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { CompanyInfo } from "./CompanyInfo";
 import { FormSection } from "./FormSection";
 import { ProgressIndicator } from "./ProgressIndicator";
@@ -80,6 +80,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [editableFields, setEditableFields] = useState<EditableFields>({
     companyName: "",
@@ -200,15 +201,24 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
     );
   };
 
-  const handleNext = () => {
-    // Save current form state to session storage
-    saveToSessionStorage({
-      companySetup: formData,
-      editableFields: editableFields,
-      currentStep: 'companySetup'
-    });
-    window.scrollTo(0, 0);
-    onNext();
+  const handleNext = async () => {
+    setIsSubmitting(true);
+    try {
+      // Save current form state to session storage
+      saveToSessionStorage({
+        companySetup: formData,
+        editableFields: editableFields,
+        currentStep: 'companySetup'
+      });
+      
+      // Add a small delay to make the loading state visible
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      window.scrollTo(0, 0);
+      onNext();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -245,47 +255,47 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
                 <TextAreaField
                   label="Industry Sector"
                   value={editableFields.industrySector}
-                  onChange={(value) =>
-                    handleEditableFieldUpdate("industrySector", value)
-                  }
+                  onChange={(value) => handleEditableFieldUpdate("industrySector", value)}
                   placeholder="Enter industry sector or wait for auto-fill"
                 />
                 <TextAreaField
                   label="Company Overview"
                   value={editableFields.companyOverview}
-                  onChange={(value) =>
-                    handleEditableFieldUpdate("companyOverview", value)
-                  }
+                  onChange={(value) => {
+                    handleEditableFieldUpdate("companyOverview", value);
+                  }}
                   placeholder="Enter company overview or wait for auto-fill"
                 />
                 <TextAreaField
                   label="Core Products / Service"
                   value={editableFields.coreProducts}
-                  onChange={(value) =>
-                    handleEditableFieldUpdate("coreProducts", value)
-                  }
+                  onChange={(value) => {
+                    handleEditableFieldUpdate("coreProducts", value);
+                  }}
                   placeholder="Enter core products/services or wait for auto-fill"
                 />
                 <TextAreaField
                   label="Demographic"
                   value={editableFields.demographic}
-                  onChange={(value) =>
-                    handleEditableFieldUpdate("demographic", value)
-                  }
+                  onChange={(value) => {
+                    handleEditableFieldUpdate("demographic", value);
+                  }}
                   placeholder="Enter demographic information or wait for auto-fill"
                 />
                 <TextAreaField
                   label="Unique Selling Point"
                   value={editableFields.uniqueSellingPoint}
-                  onChange={(value) =>
-                    handleEditableFieldUpdate("uniqueSellingPoint", value)
-                  }
+                  onChange={(value) => {
+                    handleEditableFieldUpdate("uniqueSellingPoint", value);
+                  }}
                   placeholder="Enter unique selling points or wait for auto-fill"
                 />
                 <TextAreaField
                   label="Geographic"
                   value={editableFields.geographic}
-                  onChange={(value) => handleEditableFieldUpdate("geographic", value)}
+                  onChange={(value) => {
+                    handleEditableFieldUpdate("geographic", value);
+                  }}
                   placeholder="Enter geographic information or wait for auto-fill"
                 />
                 <TermsCheckbox
@@ -295,6 +305,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
                 <SubmitButton
                   isValid={isFormValid()}
                   onClick={handleNext}
+                  isLoading={isSubmitting}
                 />
               </section>
             </main>

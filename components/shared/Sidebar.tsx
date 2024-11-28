@@ -3,21 +3,41 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SignOutButton } from "@clerk/nextjs";
 
 interface NavigationItemProps {
   icon: string;
   label: string;
   isLogout?: boolean;
   onClick?: () => void;
+  children?: React.ReactNode;
 }
 
-const NavigationItem: React.FC<NavigationItemProps> = ({ icon, label, isLogout = false, onClick }) => {
+const NavigationItem: React.FC<NavigationItemProps> = ({ icon, label, isLogout = false, onClick, children }) => {
+  const baseClassName = `flex gap-2 items-center px-4 py-2.5 w-full bg-white ${
+    isLogout ? "text-red-600 border-t border-solid border-t-zinc-300" : "text-neutral-950"
+  }`;
+
+  if (children) {
+    return (
+      <div className={baseClassName}>
+        <img
+          loading="lazy"
+          src={icon}
+          alt=""
+          className="object-contain shrink-0 self-stretch my-auto w-5 aspect-square"
+        />
+        <span className="flex-1 shrink self-stretch my-auto basis-0">
+          {children}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <button
       onClick={onClick}
-      className={`flex gap-2 items-center px-4 py-2.5 w-full bg-white ${
-        isLogout ? "text-red-600 border-t border-solid border-t-zinc-300" : "text-neutral-950"
-      }`}
+      className={baseClassName}
       tabIndex={0}
       aria-label={label}
     >
@@ -87,14 +107,7 @@ export const Sidebar: React.FC = () => {
   }, []);
 
   const handleSubscription = () => {
-    // Handle subscription logic
     console.log("Subscription clicked");
-    setIsDropdownOpen(false);
-  };
-
-  const handleLogout = () => {
-    // Handle logout logic
-    console.log("Logout clicked");
     setIsDropdownOpen(false);
   };
 
@@ -134,8 +147,9 @@ export const Sidebar: React.FC = () => {
               icon={navigationItems[1].icon}
               label={navigationItems[1].label}
               isLogout
-              onClick={handleLogout}
-            />
+            >
+              <SignOutButton />
+            </NavigationItem>
           </div>
         )}
       </div>

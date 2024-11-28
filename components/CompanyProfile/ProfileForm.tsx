@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { CheckboxField } from "../shared/CheckboxField";
 import { AutoFillButton } from "../shared/AutoFillButton";
+import { InfoIcon } from "lucide-react";
 
 // Define the form data interface
 export interface FormData {
@@ -65,6 +66,26 @@ const autoResizeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
   textarea.style.height = 'auto';
   // Add a small buffer (2px) to prevent flickering
   textarea.style.height = `${textarea.scrollHeight + 2}px`;
+};
+
+const InfoTooltip: React.FC = () => {
+  return (
+    <div className="group relative inline-block ml-1">
+      <InfoIcon className="h-4 w-4 text-gray-500 cursor-help" />
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap">
+        If you must change your website, please{' '}
+        <a 
+          href="xxx.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-blue-300 hover:text-blue-200 underline"
+        >
+          contact us!
+        </a>
+        <div className="absolute left-1/2 -translate-x-1/2 top-full -mt-2 border-4 border-transparent border-t-gray-900"></div>
+      </div>
+    </div>
+  );
 };
 
 export const ProfileForm: React.FC<ProfileFormProps> = ({
@@ -203,16 +224,18 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
               <div className="flex flex-col flex-1 shrink basis-0 min-w-[240px] max-md:max-w-full">
                 <label
                   htmlFor="companyWebsite"
-                  className="text-sm font-medium max-md:max-w-full"
+                  className="text-sm font-medium max-md:max-w-full flex items-center"
                 >
-                  Company Website*
+                  Company Website
+                  <InfoTooltip />
                 </label>
                 <input
                   type="url"
                   id="companyWebsite"
-                  className="flex gap-2 items-center px-3.5 py-2.5 mt-1.5 w-full text-base whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 max-md:max-w-full"
+                  className="flex gap-2 items-center px-3.5 py-2.5 mt-1.5 w-full text-base whitespace-nowrap bg-gray-50 rounded-lg border border-solid border-zinc-300 max-md:max-w-full cursor-not-allowed"
                   value={formData.website}
-                  onChange={(e) => handleInputChange('website', e.target.value)}
+                  disabled
+                  readOnly
                 />
               </div>
             </div>

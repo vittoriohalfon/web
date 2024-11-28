@@ -2,6 +2,7 @@ import React from "react";
 import { InputField } from "./InputField";
 import { SelectField } from "./SelectField";
 import { CheckboxField } from "../shared/CheckboxField";
+import { InfoIcon } from "lucide-react";
 import type { FormData, DropdownOptions } from "@/components/CompanySetup/types";
 
 interface FormSectionProps {
@@ -10,6 +11,18 @@ interface FormSectionProps {
   updateFormField: (field: string, value: string | boolean) => void;
   updateEditableField: (field: string, value: string) => void;
 }
+
+const InfoTooltip: React.FC = () => {
+  return (
+    <div className="group relative inline-block ml-1">
+      <InfoIcon className="h-4 w-4 text-gray-500 cursor-help" />
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap">
+        You will not be able to change your company website later! Please ensure it is correct.
+        <div className="absolute left-1/2 -translate-x-1/2 top-full -mt-2 border-4 border-transparent border-t-gray-900"></div>
+      </div>
+    </div>
+  );
+};
 
 export const FormSection: React.FC<FormSectionProps> = ({
   formData,
@@ -26,13 +39,19 @@ export const FormSection: React.FC<FormSectionProps> = ({
           onChange={(value) => updateEditableField("companyName", value)}
           placeholder="Enter company name"
         />
-        <InputField
-          label="Company Website*"
-          value={formData.companyWebsite}
-          onChange={(value) => updateEditableField("companyWebsite", value)}
-          placeholder="Enter company website"
-          type="url"
-        />
+        <div className="flex-1 shrink basis-0 min-w-[240px]">
+          <div className="flex items-center">
+            <span className="text-sm font-medium">Company Website*</span>
+            <InfoTooltip />
+          </div>
+          <InputField
+            value={formData.companyWebsite}
+            onChange={(value) => updateEditableField("companyWebsite", value)}
+            placeholder="Enter company website"
+            type="url"
+            hideLabel
+          />
+        </div>
       </div>
       <SelectField
         label="Annual Turnover Estimation*"
