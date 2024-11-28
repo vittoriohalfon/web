@@ -230,7 +230,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
     <div className="overflow-hidden bg-white">
       <div className="flex gap-5 max-md:flex-col">
         <CompanyInfo />
-        <div className="flex flex-col ml-5 w-6/12 max-md:ml-0 max-md:w-full">
+        <div className="flex flex-col ml-[31%] w-[69%] max-md:ml-0 max-md:w-full">
           <div className="flex flex-col px-12 py-12 w-full max-md:px-5 max-md:max-w-full">
             <ProgressIndicator />
             <main className="flex flex-col mt-16 w-full max-md:mt-10 max-md:max-w-full">

@@ -28,10 +28,3 @@ export enum SetupStep {
   PastPerformance = 2,
   FinalSteps = 3
 }
-
-export interface DocumentItemProps {
-  fileName: string;
-  fileSize: string;
-  onDelete?: () => void;
-  onView?: () => void;
-} 

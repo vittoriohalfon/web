@@ -95,9 +95,7 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
         </div>
         <div className="flex flex-wrap gap-6 w-full max-md:max-w-full">
           <div className="flex flex-col grow shrink min-w-[240px] w-[763px] max-md:max-w-full">
-            <div className="prose max-md:max-w-full text-black">
-              {tender.description}
-            </div>
+            <p className="truncate-description">{tender.description}</p>
             <div className="flex flex-wrap flex-1 gap-10 items-center mt-4 whitespace-nowrap size-full max-md:max-w-full">
               <div className="flex flex-col self-stretch my-auto w-[88px]">
                 <div className="text-sm leading-none text-stone-500">Lots</div>

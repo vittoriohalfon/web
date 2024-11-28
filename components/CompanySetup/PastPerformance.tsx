@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { CompanyInfo } from "./CompanyInfo";
 import { ProgressBar } from "./ProgressBar";
-import { FileUploader } from "./FileUploader";
+import { FileUploader } from "../shared/FileUploader";
 import { NavigationButtons } from "./NavigationButtons";
 import { SetupStep } from "./types";
 import { saveToSessionStorage, getFromSessionStorage } from '@/utils/sessionStorage';
-import { DocumentItem } from './DocumentItem';
+import { DocumentItem } from "../shared/DocumentItem";
 
 interface PastPerformanceProps {
   onPrevious: () => void;
@@ -13,12 +13,16 @@ interface PastPerformanceProps {
   onUpload: (files: File[]) => Promise<void>;
 }
 
+interface FileWithPreview extends File {
+  preview?: string;
+}
+
 export const PastPerformance: React.FC<PastPerformanceProps> = ({
   onPrevious,
   onSkip,
   onUpload,
 }) => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -28,11 +32,29 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
     }
   }, []);
 
-  const handleFileSelect = async (files: File[]) => {
+  useEffect(() => {
+    // Clean up previews when component unmounts
+    return () => {
+      files.forEach(file => {
+        if (file.preview) {
+          URL.revokeObjectURL(file.preview);
+        }
+      });
+    };
+  }, [files]);
+
+  const handleFileSelect = async (newFiles: File[]) => {
     try {
-      // Convert files to the required format with base64 content
+      // Create preview URLs for the files
+      const filesWithPreviews = newFiles.map(file => Object.assign(file, {
+        preview: URL.createObjectURL(file)
+      }));
+
+      setFiles(prev => [...prev, ...filesWithPreviews]);
+
+      // Save to session storage
       const processedFiles = await Promise.all(
-        files.map(async (file) => {
+        newFiles.map(async (file) => {
           return new Promise<{ name: string; size: number; type: string; content: string | ArrayBuffer | null; }>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => {
@@ -127,7 +149,7 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
     <div className="overflow-hidden bg-white">
       <div className="flex gap-5 max-md:flex-col">
         <CompanyInfo />
-        <main className="flex flex-col ml-5 w-[69%] max-md:ml-0 max-md:w-full">
+        <main className="flex flex-col ml-[31%] w-[69%] max-md:ml-0 max-md:w-full">
           <div className="flex flex-col px-32 pt-12 w-full pb-[613px] max-md:px-5 max-md:pb-24 max-md:max-w-full">
             <ProgressBar currentStep={SetupStep.PastPerformance} />
             <section className="flex flex-col mt-16 w-full max-md:mt-10 max-md:max-w-full">

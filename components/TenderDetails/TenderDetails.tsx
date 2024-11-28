@@ -207,16 +207,21 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
                 alt=""
                 className="w-4 h-4"
               />
-              <div className="font-semibold text-neutral-950 truncate">
+              <div className="font-semibold text-neutral-950 truncate max-w-[220px]">
                 {tenderData.title}
               </div>
             </nav>
 
             <section className="flex flex-wrap gap-7 justify-between items-start w-full">
               <div className="flex flex-col flex-1 min-w-0">
-                <h1 className="text-2xl font-semibold text-neutral-950 truncate">
+                <h1
+                  className={`font-semibold text-neutral-950 ${
+                    tenderData.title.length > 50 ? 'text-xl' : 'text-2xl'
+                  }`}
+                >
                   {tenderData.title}
                 </h1>
+
                 <div className="flex gap-4 items-start self-start mt-4 text-xs font-medium leading-loose text-zinc-800">
                   <div className="gap-2 self-stretch px-2 py-1 text-emerald-600 bg-indigo-50 rounded border border-indigo-600 border-solid min-h-[26px]">
                     {tenderData.match_percentage}% Match

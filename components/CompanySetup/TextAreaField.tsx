@@ -49,11 +49,11 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+        className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
         style={{
           resize: 'none',
           minHeight: '60px',
-          overflow: 'hidden', // This prevents the scrollbar
+          overflow: 'hidden',
           boxSizing: 'border-box'
         }}
       />

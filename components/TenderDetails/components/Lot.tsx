@@ -19,7 +19,7 @@ export const Lot: React.FC<LotProps> = ({ lot }) => {
             <div className="flex-shrink-0 px-2.5 text-center text-indigo-700 whitespace-nowrap bg-indigo-50 rounded-full border border-indigo-300 border-solid h-[27px] min-h-[26px] w-[27px] flex items-center justify-center">
               {lot.number}
             </div>
-            <div className="text-neutral-950 truncate font-semibold">
+            <div className={`text-neutral-950 font-semibold ${!isExpanded ? 'truncate' : ''}`}>
               {lot.title}
             </div>
           </div>

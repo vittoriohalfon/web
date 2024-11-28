@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface HeaderProps {
   userCreatedAt: Date;
@@ -11,6 +13,7 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
   const TRIAL_PERIOD_DAYS = 14;
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
   
   useEffect(() => {
     async function checkSubscriptionStatus() {
@@ -89,12 +92,26 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
       {showNav && (
         <nav className="flex flex-col gap-4 justify-center items-start px-6 py-4 w-full text-sm font-medium bg-white max-md:px-5 max-md:max-w-full">
           <div className="flex gap-4 items-center max-md:max-w-full">
-            <button className="self-stretch px-4 py-2 my-auto text-white bg-indigo-700 rounded-lg w-[221px]">
+            <Link 
+              href="/company-profile"
+              className={`self-stretch px-4 py-2 my-auto rounded-lg w-[221px] text-center ${
+                pathname === '/company-profile' 
+                  ? 'text-white bg-indigo-700' 
+                  : 'text-stone-500'
+              }`}
+            >
               Company Profile
-            </button>
-            <button className="self-stretch px-4 py-2 my-auto whitespace-nowrap rounded-lg text-stone-500 w-[221px]">
+            </Link>
+            <Link 
+              href="/files"
+              className={`self-stretch px-4 py-2 my-auto whitespace-nowrap rounded-lg w-[221px] text-center ${
+                pathname === '/files' 
+                  ? 'text-white bg-indigo-700' 
+                  : 'text-stone-500'
+              }`}
+            >
               Files
-            </button>
+            </Link>
           </div>
         </nav>
       )}

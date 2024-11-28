@@ -21,7 +21,7 @@ import { ProgressIndicator } from "./components/CompanySetup/ProgressIndicator";
 import { SelectField } from "./components/CompanySetup/SelectField";
 import { Sidebar } from "./components/shared/Sidebar";
 import { SubmitButton } from "./components/CompanySetup/SubmitButton";
-import { TenderCard } from "./components/shared/TenderCard";
+import { TenderCard } from "./components/TenderDashboard/TenderCard";
 import { TenderDashboard } from "./components/TenderDashboard/TenderDashboard";
 import { TermsCheckbox } from "./components/CompanySetup/TermsCheckbox";
 import { TextAreaField } from "./components/CompanySetup/TextAreaField";

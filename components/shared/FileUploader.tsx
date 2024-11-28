@@ -2,10 +2,12 @@ import React from "react";
 
 interface FileUploaderProps {
   onFileSelect: (files: File[]) => void;
+  disabled?: boolean;
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
   onFileSelect,
+  disabled,
 }) => {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -59,6 +61,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             onChange={handleFileChange}
             accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
             aria-label="Choose files to upload"
+            disabled={disabled}
           />
           <img
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/e067efeebb7c07f09508905ac76ca2dd9574d88a40f726389dbc865d488cc890?placeholderIfAbsent=true&apiKey=27ce83af570848e9b22665bc31a03bc0"
