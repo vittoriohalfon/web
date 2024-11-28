@@ -7,7 +7,7 @@ import { CompanyInfo } from "./components/CompanySetup/CompanyInfo";
 import { CompanySetupForm } from "./components/CompanySetup/CompanySetupForm";
 import { CountryFilter } from "./components/TenderDashboard/CountryFilter";
 import { CountryItem } from "./components/TenderDashboard/CountryItem";
-import { FileUploader } from "./components/CompanySetup/FileUploader";
+import { FileUploader } from "./components/shared/FileUploader";
 import { FilterBar } from "./components/TenderDashboard/FilterBar";
 import { FilterDropdown } from "./components/TenderDashboard/FilterDropdown";
 import { FormSection } from "./components/CompanySetup/FormSection";

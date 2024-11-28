@@ -9,7 +9,6 @@ import { TextAreaField } from "./TextAreaField";
 import { TermsCheckbox } from "./TermsCheckbox";
 import { SubmitButton } from "./SubmitButton";
 import { FormData, EditableFields, DropdownOptions } from "./types";
-import { saveToSessionStorage, getFromSessionStorage } from '@/utils/sessionStorage';
 
 interface CompanySetupFormProps {
   onNext: () => void;
@@ -34,6 +33,11 @@ const cleanContent = (content: string): string => {
 };
 
 export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) => {
+  // State declarations
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [formData, setFormData] = useState<FormData>({
     companyName: "",
     companyWebsite: "",
@@ -79,9 +83,6 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
 
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [editableFields, setEditableFields] = useState<EditableFields>({
     companyName: "",
     companyWebsite: "",
@@ -93,14 +94,62 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
     geographic: "",
   });
 
-  // Load saved data from session storage on component mount
-  useEffect(() => {
-    const savedData = getFromSessionStorage();
-    if (savedData?.companySetup) {
-      setFormData(savedData.companySetup);
-      setEditableFields(savedData.editableFields);
+  // Function declarations
+  const fetchExistingData = async () => {
+    try {
+      const response = await fetch("/api/user/get-profile");
+      const data = await response.json();
+
+      if (data.exists) {
+        setFormData({
+          companyName: data.name || "",
+          companyWebsite: data.website || "",
+          annualTurnover: data.annualTurnover || "",
+          primaryLocation: data.primaryLocation || "",
+          hasTenderExperience: data.experienceWithTenders || false,
+          termsAccepted: false,
+        });
+
+        setEditableFields({
+          companyName: data.name || "",
+          companyWebsite: data.website || "",
+          industrySector: data.industrySector || "",
+          companyOverview: data.companyOverview || "",
+          coreProducts: data.coreProductsServices || "",
+          demographic: data.demographic || "",
+          uniqueSellingPoint: data.uniqueSellingPoint || "",
+          geographic: data.geographicFocus || "",
+        });
+      } else {
+        // If no existing data, initialize with empty values (already handled by initial state)
+        console.log("No existing company data found:", data.message);
+      }
+    } catch (error) {
+      // Handle any errors silently, keeping the form empty
+      console.error("Error fetching existing company data:", error);
+    } finally {
+      setIsInitialLoading(false);
     }
+  };
+
+  // useEffect hooks
+  useEffect(() => {
+    console.log("Form data updated:", formData);
+    console.log("Editable fields updated:", editableFields);
+  }, [formData, editableFields]);
+
+  useEffect(() => {
+    fetchExistingData();
   }, []);
+
+  // Loading state
+  if (isInitialLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   const updateFormField = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -204,27 +253,31 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
   const handleNext = async () => {
     setIsSubmitting(true);
     try {
-      // Save current form state to session storage
-      saveToSessionStorage({
-        companySetup: formData,
-        editableFields: editableFields,
-        currentStep: 'companySetup'
+      const response = await fetch('/api/user/save-company-setup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          companySetup: formData,
+          editableFields: editableFields
+        })
       });
-      
-      // Add a small delay to make the loading state visible
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save company data');
+      }
+
       window.scrollTo(0, 0);
       onNext();
+    } catch (error) {
+      console.error('Error saving company data:', error);
+      alert('Failed to save company data. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    console.log("Form data updated:", formData);
-    console.log("Editable fields updated:", editableFields);
-  }, [formData, editableFields]);
 
   return (
     <div className="overflow-hidden bg-white">

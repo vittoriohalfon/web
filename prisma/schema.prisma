@@ -25,6 +25,7 @@ model User {
   name            String?
   email           String            @unique
   createdAt       DateTime          @default(now())
+  setupComplete   Boolean           @default(false)
   company         Company?
   likedContracts  LikedContract[]
   preferences     UserPreference?

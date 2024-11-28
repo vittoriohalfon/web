@@ -61,7 +61,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
         placeholder="Select Annual Turnover Estimation"
       />
       <SelectField
-        label="What is your primary location of business?"
+        label="What is your primary location of business?*"
         value={formData.primaryLocation}
         onChange={(value) => updateFormField("primaryLocation", value)}
         options={dropdownOptions.locations}

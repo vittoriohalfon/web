@@ -31,19 +31,8 @@ export default function CompanySetupClient() {
     router.push('/dashboard');
   };
 
-  const handleFileUpload = async (files: File[]) => {
-    try {
-      console.log('File upload started: ', files);
-      // Here you would typically upload the files to your server
-      // For now, we'll just simulate a successful upload
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // After successful upload, move to next step
-      handleNext();
-    } catch (error) {
-      console.error('File upload failed:', error);
-      alert('Failed to upload files. Please try again.');
-    }
+  const handleFileUpload = async () => {
+    handleNext();
   };
 
   return (

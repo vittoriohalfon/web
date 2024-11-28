@@ -3,9 +3,7 @@ import { CompanyInfo } from "./CompanyInfo";
 import { ProgressBar } from "./ProgressBar";
 import { SetupStep } from "./types";
 import { NavigationButtons } from "./NavigationButtons";
-import { saveToSessionStorage, getFromSessionStorage, clearSessionStorage } from '@/utils/sessionStorage';
 import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
 
 interface FinalStepsProps {
   onPrevious: () => void;
@@ -17,7 +15,6 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
   onComplete,
 }) => {
   const { user, isLoaded } = useUser();
-  const router = useRouter();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -42,153 +39,43 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
     "Other",
   ];
 
-  // Load saved data from session storage
-  useEffect(() => {
-    const savedData = getFromSessionStorage();
-    if (savedData?.finalSteps) {
-      setSelectedFeedbackSource(savedData.finalSteps.feedbackSource);
-      setSelectedGoal(savedData.finalSteps.goal);
-    }
-  }, []);
-
   const handleComplete = async () => {
     if (!isLoaded || !user) {
       console.error('User not loaded');
       return;
     }
 
+    if (!selectedFeedbackSource || !selectedGoal) {
+      console.error('Missing required fields');
+      return;
+    }
+
     try {
-      const allData = getFromSessionStorage();
-      console.log('Retrieved data from session storage:', allData);
-
-      if (!allData?.companySetup?.companyName) {
-        throw new Error('Company name is required');
-      }
-
-      const submitData = {
-        companySetup: allData?.companySetup,
-        editableFields: allData?.editableFields,
-        finalSteps: {
-          feedbackSource: selectedFeedbackSource,
-          goal: selectedGoal
-        },
-        pastPerformance: allData?.pastPerformance
-      };
-
-      console.log('Submitting company setup data:', submitData);
-      
-      const response = await fetch('/api/user/save-company-setup', {
+      const response = await fetch('/api/user/complete-setup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submitData),
+        body: JSON.stringify({
+          feedbackSource: selectedFeedbackSource,
+          goal: selectedGoal
+        })
       });
 
-      let responseData;
-      try {
-        responseData = await response.json();
-      } catch (e) {
-        console.error('Failed to parse response:', e);
-        throw new Error('Invalid server response');
-      }
-
       if (!response.ok) {
-        throw new Error(
-          responseData?.message || 
-          responseData?.error || 
-          `Failed to save company setup (${response.status})`
-        );
+        const errorData = await response.text();
+        throw new Error(`Failed to complete setup: ${errorData}`);
       }
 
-      const companyId = responseData.companyId;
-      if (!companyId) {
-        throw new Error('No company ID returned from server');
-      }
-
-      console.log('Company created with ID:', companyId);
-
-      // Handle file uploads, if present
-      if (allData?.pastPerformance?.files?.length > 0) {
-        try {
-          await handleFileUploads(allData.pastPerformance.files, companyId);
-        } catch (error) {
-          console.error('Error uploading files:', error);
-          alert('Company setup was saved, but there was an error uploading files. Please try uploading files again later.');
-        }
-      }
-
-      // Clear session storage after successful submission
-      clearSessionStorage();
-      console.log('Session storage cleared');
-      
-      // Call the completion handler and redirect to dashboard
       onComplete();
-      router.push('/dashboard');
-
     } catch (error) {
-      console.error('Error saving company setup:', error);
-      alert(
-        error instanceof Error 
-          ? error.message 
-          : 'Failed to save company setup. Please try again.'
-      );
+      console.error('Error completing setup:', error);
+      alert('Failed to complete setup. Please try again.');
     }
-  };
-
-  const handleFileUploads = async (files: { name: string; content: string; size: number; type: string; }[], companyId: number) => {
-    console.log('Preparing files for upload:', files.length);
-    
-    if (!Array.isArray(files)) {
-      console.error('Files is not an array:', files);
-      throw new Error('Invalid files data');
-    }
-
-    // Verify each file has the required data
-    const filesData = files.map(file => {
-      if (!file.content) {
-        console.error('File missing content:', file);
-        throw new Error(`File ${file.name} is missing required content`);
-      }
-      
-      return {
-        name: file.name,
-        content: file.content,
-        size: file.size,
-        type: file.type
-      };
-    });
-
-    console.log('Uploading files to server...');
-    const uploadResponse = await fetch('/api/user/upload-files', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        files: filesData,
-        companyId
-      }),
-    });
-
-    if (!uploadResponse.ok) {
-      const errorText = await uploadResponse.text();
-      throw new Error(`Failed to upload files: ${errorText}`);
-    }
-    
-    console.log('Files uploaded successfully');
   };
 
   // Save current step data when navigating away
   const handlePrevious = () => {
-    saveToSessionStorage({
-      ...getFromSessionStorage(),
-      finalSteps: {
-        feedbackSource: selectedFeedbackSource,
-        goal: selectedGoal
-      },
-      currentStep: 'finalSteps'
-    });
     onPrevious();
   };
 

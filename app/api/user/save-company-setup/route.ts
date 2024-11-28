@@ -2,88 +2,175 @@ import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
+interface CompanySetup {
+  companyName: string;
+  companyWebsite: string;
+  annualTurnover: string;
+  primaryLocation: string;
+  hasTenderExperience: boolean;
+}
+
+interface EditableFields {
+  industrySector: string;
+  companyOverview: string;
+  coreProducts: string;
+  demographic: string;
+  uniqueSellingPoint: string;
+  geographic: string;
+}
+
+interface FinalSteps {
+  goal: string;
+  feedbackSource: string;
+}
+
+interface RequestData {
+  companySetup?: CompanySetup;
+  editableFields?: EditableFields;
+  finalSteps?: FinalSteps;
+}
+
 export async function POST(req: Request) {
   try {
-    // Authenticate user
     const clerkUser = await currentUser();
     if (!clerkUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse request body
-    const data = await req.json();
+    const data = (await req.json()) as RequestData;
     if (!data) {
       return NextResponse.json({ error: 'No data provided' }, { status: 400 });
     }
 
-    // Destructure data with default values
-    const {
-      companySetup: {
-        companyName = '',
-        companyWebsite = null,
-        annualTurnover = null,
-        primaryLocation = null,
-        hasTenderExperience = false,
-      } = {},
-      editableFields: {
-        industrySector = null,
-        companyOverview = null,
-        coreProducts = null,
-        demographic = null,
-        uniqueSellingPoint = null,
-        geographic = null,
-      } = {},
-      finalSteps: { 
-        goal = null,
-        feedbackSource = null
-      } = {},
-    } = data;
+    // Validate that at least one of the expected data sections is present
+    if (!data.companySetup && !data.editableFields && !data.finalSteps) {
+      return NextResponse.json({ 
+        error: 'Invalid data format. At least one of companySetup, editableFields, or finalSteps is required' 
+      }, { status: 400 });
+    }
 
-    // Upsert user
+    // Get or create user with additional setupComplete field in update/create
     const user = await prisma.user.upsert({
       where: { clerkId: clerkUser.id },
-      update: {},
+      update: {
+        ...(data.finalSteps?.feedbackSource && data.finalSteps?.goal && { setupComplete: true })
+      },
       create: {
         clerkId: clerkUser.id,
         email: clerkUser.emailAddresses[0]?.emailAddress || '',
         name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim(),
+        setupComplete: false,
       },
     });
 
-    // Create company
-    const company = await prisma.company.create({
-      data: {
-        userId: user.id,
-        name: companyName,
-        website: companyWebsite,
-        annualTurnover,
-        primaryLocation,
-        experienceWithTenders: Boolean(hasTenderExperience),
-        industrySector,
-        companyOverview,
-        coreProductsServices: coreProducts,
-        demographic,
-        uniqueSellingPoint,
-        geographicFocus: geographic,
-      },
-    });
+    let companyId: number | undefined;
 
-    // Create user preference if goal or feedback source is provided
-    if (goal || feedbackSource) {
+    // Only handle company data if companySetup or editableFields are present
+    if (data.companySetup || data.editableFields) {
+      // Find existing company or create new one
+      let company = await prisma.company.findFirst({
+        where: { userId: user.id }
+      });
+
+      // Prepare company data for upsert
+      const companyData: Partial<{
+        name: string;
+        website: string;
+        annualTurnover: string;
+        primaryLocation: string;
+        experienceWithTenders: boolean;
+        industrySector: string;
+        companyOverview: string;
+        coreProductsServices: string;
+        demographic: string;
+        uniqueSellingPoint: string;
+        geographicFocus: string;
+      }> = {};
+      
+      // Handle company setup data
+      if (data.companySetup) {
+        Object.assign(companyData, {
+          name: data.companySetup.companyName,
+          website: data.companySetup.companyWebsite,
+          annualTurnover: data.companySetup.annualTurnover,
+          primaryLocation: data.companySetup.primaryLocation,
+          experienceWithTenders: data.companySetup.hasTenderExperience,
+        });
+      }
+
+      // Handle editable fields
+      if (data.editableFields) {
+        Object.assign(companyData, {
+          industrySector: data.editableFields.industrySector,
+          companyOverview: data.editableFields.companyOverview,
+          coreProductsServices: data.editableFields.coreProducts,
+          demographic: data.editableFields.demographic,
+          uniqueSellingPoint: data.editableFields.uniqueSellingPoint,
+          geographicFocus: data.editableFields.geographic,
+        });
+      }
+
+      // Update or create company
+      company = await prisma.company.upsert({
+        where: { 
+          id: company?.id || -1 
+        },
+        update: companyData,
+        create: {
+          userId: user.id,
+          name: data.companySetup?.companyName || '',
+          website: data.companySetup?.companyWebsite || '',
+          annualTurnover: data.companySetup?.annualTurnover || '',
+          primaryLocation: data.companySetup?.primaryLocation || '',
+          experienceWithTenders: data.companySetup?.hasTenderExperience || false,
+          industrySector: data.editableFields?.industrySector || '',
+          companyOverview: data.editableFields?.companyOverview || '',
+          coreProductsServices: data.editableFields?.coreProducts || '',
+          demographic: data.editableFields?.demographic || '',
+          uniqueSellingPoint: data.editableFields?.uniqueSellingPoint || '',
+          geographicFocus: data.editableFields?.geographic || '',
+        },
+      });
+
+      companyId = company.id;
+    }
+
+    // Handle final steps data
+    if (data.finalSteps) {
       await prisma.userPreference.upsert({
         where: { userId: user.id },
-        update: { goal, referralSource: feedbackSource },
-        create: { userId: user.id, goal, referralSource: feedbackSource },
+        update: {
+          goal: data.finalSteps.goal,
+          referralSource: data.finalSteps.feedbackSource
+        },
+        create: {
+          userId: user.id,
+          goal: data.finalSteps.goal,
+          referralSource: data.finalSteps.feedbackSource
+        },
+      });
+
+      // Update user's setupComplete status again to ensure it's set
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { setupComplete: true }
       });
     }
 
-    // Respond with the created company ID
-    return NextResponse.json({ companyId: company.id }, { status: 200 });
+    return NextResponse.json({ 
+      success: true,
+      companyId,
+      message: 'Data saved successfully' 
+    });
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    console.error('Error saving data:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error', message: errorMessage },
+      { 
+        success: false,
+        error: 'Internal Server Error', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      },
       { status: 500 }
     );
   }

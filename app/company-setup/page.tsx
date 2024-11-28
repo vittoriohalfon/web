@@ -10,13 +10,13 @@ export default async function OnboardingPage() {
     redirect('/sign-in');
   }
 
-  // Check if user has company directly from database
+  // Check if user has completed setup
   const dbUser = await prisma.user.findUnique({
     where: { clerkId: user.id },
     include: { company: true },
   });
 
-  if (dbUser?.company) {
+  if (dbUser?.setupComplete) {
     redirect('/dashboard');
   }
 

@@ -4,7 +4,6 @@ import { ProgressBar } from "./ProgressBar";
 import { FileUploader } from "../shared/FileUploader";
 import { NavigationButtons } from "./NavigationButtons";
 import { SetupStep } from "./types";
-import { saveToSessionStorage, getFromSessionStorage } from '@/utils/sessionStorage';
 import { DocumentItem } from "../shared/DocumentItem";
 
 interface PastPerformanceProps {
@@ -26,13 +25,6 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    const savedData = getFromSessionStorage();
-    if (savedData?.pastPerformance?.files) {
-      console.log('Found saved files:', savedData.pastPerformance.files);
-    }
-  }, []);
-
-  useEffect(() => {
     // Clean up previews when component unmounts
     return () => {
       files.forEach(file => {
@@ -52,35 +44,26 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
 
       setFiles(prev => [...prev, ...filesWithPreviews]);
 
-      // Save to session storage
-      const processedFiles = await Promise.all(
-        newFiles.map(async (file) => {
-          return new Promise<{ name: string; size: number; type: string; content: string | ArrayBuffer | null; }>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-              resolve({
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                content: reader.result
-              });
-            };
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(file);
-          });
-        })
-      );
-
-      // Save to session storage
-      saveToSessionStorage({
-        ...getFromSessionStorage(),
-        pastPerformance: {
-          files: processedFiles
-        },
-        currentStep: SetupStep.PastPerformance
+      // Upload files immediately using FormData
+      const formData = new FormData();
+      newFiles.forEach((file) => {
+        formData.append('files', file);
       });
 
-      setFiles(files); // For UI display purposes
+      const response = await fetch('/api/user/upload-files', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload files');
+      }
+
+      // Update UI with the uploaded files
+      const result = await response.json();
+      console.log('Files uploaded successfully:', result);
+
     } catch (error) {
       console.error('Error processing files:', error);
       alert('Error processing files. Please try again.');
@@ -92,28 +75,14 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
       alert("Please select files first");
       return;
     }
+    
     setIsUploading(true);
     try {
+      // Call the onUpload prop to move to next step
       await onUpload(files);
-      
-      const existingData = getFromSessionStorage() || {};
-      saveToSessionStorage({
-        ...existingData,
-        pastPerformance: {
-          ...existingData.pastPerformance,
-          uploadedFiles: files.map(f => ({
-            name: f.name,
-            size: f.size,
-            type: f.type,
-          })),
-          uploadComplete: true
-        },
-        currentStep: 'pastPerformance'
-      });
-      
     } catch (error) {
-      console.error("Upload failed:", error);
-      alert("Failed to upload files. Please try again.");
+      console.error("Failed to complete past performance step:", error);
+      alert("Failed to complete this step. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -128,21 +97,8 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
   };
 
   const handleDeleteFile = (indexToDelete: number) => {
-    const newFiles = files.filter((_, index) => index !== indexToDelete);
-    setFiles(newFiles);
-    
-    const existingData = getFromSessionStorage() || {};
-    saveToSessionStorage({
-      ...existingData,
-      pastPerformance: {
-        ...existingData.pastPerformance,
-        files: newFiles.map(file => ({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-        }))
-      }
-    });
+    //TODO: Implement file deletion by calling api/user/delete-file/ endpoint
+    return indexToDelete;
   };
 
   return (

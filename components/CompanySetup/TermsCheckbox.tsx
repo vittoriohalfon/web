@@ -29,7 +29,7 @@ export const TermsCheckbox: React.FC<TermsCheckboxProps> = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            Terms of Service
+            Terms of Service*
           </a>
         </label>
       </div>

@@ -14,26 +14,36 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Get user's company ID from the database
-        const user = await prisma.user.findUnique({
+        // Get or create user and company
+        const user = await prisma.user.upsert({
             where: { clerkId: clerkUser.id },
+            update: {},
+            create: {
+                clerkId: clerkUser.id,
+                email: clerkUser.emailAddresses[0]?.emailAddress || '',
+                name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim(),
+            },
             include: { company: true }
         });
 
-        if (!user?.company?.id) {
+        if (!user.company) {
             return NextResponse.json({ error: 'Company not found' }, { status: 404 });
         }
 
-        const companyId = user.company.id; // Store it in a variable after the check
+        const company = user.company;
 
         const formData = await req.formData();
-        const files = formData.getAll('files');
+        const files = Array.from(formData.getAll('files'));
 
         if (!files.length) {
             return NextResponse.json({ error: 'No files provided' }, { status: 400 });
         }
 
-        const uploadPromises = files.map(async (file: any) => {
+        const uploadPromises = files.map(async (file) => {
+            if (!(file instanceof File)) {
+                throw new Error('Invalid file type');
+            }
+            
             const buffer = await file.arrayBuffer();
             const fileName = file.name;
             const fileSize = file.size;
@@ -56,7 +66,7 @@ export async function POST(req: Request) {
 
             return await prisma.pastPerformance.create({
                 data: {
-                    companyId: companyId, // Use the stored variable
+                    companyId: company.id,
                     fileUrl: `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
                     fileName: fileName,
                     size: fileSize,
@@ -66,7 +76,11 @@ export async function POST(req: Request) {
         });
 
         const results = await Promise.all(uploadPromises);
-        return NextResponse.json({ success: true, files: results });
+        return NextResponse.json({ 
+            success: true, 
+            files: results,
+            companyId: company.id 
+        });
         
     } catch (error) {
         console.error('Error uploading files:', error);

@@ -17,19 +17,31 @@ export async function GET() {
       },
     });
 
-    if (!user || !user.company) {
-      return new NextResponse("Company not found", { status: 404 });
+    if (!user) {
+      return NextResponse.json({
+        exists: false,
+        message: "User not found"
+      });
     }
 
-    const responseData = {
+    if (!user.company) {
+      return NextResponse.json({
+        exists: false,
+        message: "Company not found"
+      });
+    }
+
+    return NextResponse.json({
+      exists: true,
       ...user.company,
       userCreatedAt: user.createdAt
-    };
-
-    return NextResponse.json(responseData);
+    });
   } catch (error) {
     console.error("Error fetching company profile:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json({
+      exists: false,
+      message: "Error fetching profile"
+    });
   }
 }
 
