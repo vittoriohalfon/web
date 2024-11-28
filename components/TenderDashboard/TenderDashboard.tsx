@@ -18,21 +18,20 @@ interface TenderDashboardProps {
 
 export const TenderDashboard: React.FC<TenderDashboardProps> = ({ tenders, loading, error }) => {
   const pathname = usePathname();
-  const showDashboardControls = pathname === '/dashboard';
+  const isDashboard = pathname === '/dashboard';
+  const showFilters = isDashboard && tenders.length > 0;
 
   return (
     <div className="flex overflow-hidden bg-white">
       <Sidebar />
-      <main className="flex flex-col flex-1 ml-[312px] min-w-[240px] max-md:max-w-full">
+      <main className="flex flex-col flex-1 ml-[312px] min-w-[240px] max-md:ml-0 max-md:max-w-full">
         <Header userCreatedAt={new Date()} showNav={false} />
-        <section className="flex flex-col justify-center p-6 w-full bg-white border-t border-b border-solid border-y-zinc-300 max-md:px-5 max-md:max-w-full">
-          {showDashboardControls && (
-            <>
-              <SearchBar />
-              <FilterBar />
-            </>
-          )}
-        </section>
+        {showFilters && (
+          <section className="flex flex-col justify-center p-6 w-full bg-white border-t border-b border-solid border-y-zinc-300 max-md:px-5 max-md:max-w-full">
+            <SearchBar />
+            <FilterBar />
+          </section>
+        )}
         <TenderList tenders={tenders} loading={loading} error={error} />
       </main>
     </div>

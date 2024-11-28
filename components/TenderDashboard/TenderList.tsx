@@ -3,6 +3,7 @@
 import React from "react";
 import { TenderCard } from "./TenderCard";
 import { TenderCardSkeleton } from "./TenderCardSkeleton";
+import { EmptyState } from "./EmptyState";
 import { Tender } from "@/types/tender";
 import { countryCodeToFlagPath } from "@/utils/codeConvertor";
 
@@ -25,6 +26,19 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
 
   if (error) {
     return <div className="p-6 text-red-500">Error: {error}</div>;
+  }
+
+  if (tenders.length === 0) {
+    return (
+      <EmptyState
+        title="Get Started!"
+        description="You haven't liked any tenders yet. Start exploring to find opportunities!"
+        actionLabel="Start Search"
+        imageSrc="https://cdn.builder.io/api/v1/image/assets/TEMP/f8c8b848ef6c5cb291ea5f1227b8af001596c0f6316429fcbf1b61111d2ac444?placeholderIfAbsent=true&apiKey=94e3216da1274ce18b1afabc0138b324"
+        showSearch={true}
+        actionRoute="/dashboard"
+      />
+    );
   }
 
   return (

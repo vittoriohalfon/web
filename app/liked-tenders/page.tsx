@@ -55,15 +55,15 @@ export default function LikedTendersPage() {
           notice_id: tender.noticeId,
           title: tender.title,
           description: tender.description,
-          match_percentage: 0, // Not applicable for liked tenders
+          match_percentage: 0,
           amount: tender.estimatedValue,
           currency: tender.currency,
           country: tender.country,
           lot_count: tender.lot_count,
-          status: 'green', // You might want to determine this based on dates
+          status: 'green',
           published: tender.published,
           deadline: tender.deadline,
-          isLiked: true, // These are liked tenders
+          isLiked: true,
         }));
 
         setTenders(transformedTenders);
