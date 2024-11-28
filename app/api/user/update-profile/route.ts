@@ -24,7 +24,6 @@ export async function PUT(request: Request) {
       where: { userId: user.id },
       data: {
         name: data.companyName,
-        website: data.website,
         annualTurnover: data.turnover,
         primaryLocation: data.location,
         experienceWithTenders: data.experienceWithTenders,
