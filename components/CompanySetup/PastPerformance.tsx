@@ -135,10 +135,8 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
                 <h1 className="text-2xl font-semibold leading-tight text-neutral-950 max-md:max-w-full">
                   Capabilities and Past Performance
                 </h1>
-                <p className="mt-2 text-base leading-5 text-zinc-600 max-md:max-w-full">
-                  Upload files showcasing your company&apos;s capabilities and past
-                  work to help Skim find new opportunities. 
-                  Upload files showcasing your capabilities, financial documentation, 
+                <p className="body-text-slim mt-2 max-md:max-w-full">
+                  Upload files showcasing your company&apos;s capabilities, financial documentation, 
                   insurance, and compliance certifications (e.g., ISO 9001) to 
                   streamline and strengthen your tender applications. 
                   Don&apos;t have them? Skim can walk you through the process

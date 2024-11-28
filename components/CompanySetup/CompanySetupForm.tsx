@@ -238,7 +238,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
                 <h1 className="text-2xl font-semibold text-neutral-950 max-md:max-w-full">
                   Welcome to Skim!
                 </h1>
-                <p className="mt-2 text-base text-zinc-600 max-md:max-w-full">
+                <p className="body-text-slim">
                   Let&apos;s set up your organization.
                 </p>
                 <FormSection

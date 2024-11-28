@@ -201,7 +201,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
               <h1 className="text-2xl font-semibold text-neutral-950 max-md:max-w-full">
                 Company Profile
               </h1>
-              <p className="mt-2 text-base text-zinc-600 max-md:max-w-full">
+              <p className="body-text-slim">
                 Let&apos;s set up your organization.
               </p>
             </div>

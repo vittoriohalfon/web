@@ -204,8 +204,8 @@ export const FinalSteps: React.FC<FinalStepsProps> = ({
                 <h1 className="text-2xl font-semibold leading-tight text-neutral-950 max-md:max-w-full">
                   Final Steps
                 </h1>
-                <p className="mt-2 text-base leading-5 text-zinc-600 max-md:max-w-full">
-                  Help us understand your business better to provide more relevant opportunities.
+                <p className="body-text-slim mt-2 max-md:max-w-full">
+                  Let&apos;s get some final information from you so we can best tailor your Skim experience.
                 </p>
               </div>
 
