@@ -65,10 +65,6 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
     }
   };
 
-  const handleGoogleDriveSelect = () => {
-    console.log("Google Drive integration to be implemented");
-  };
-
   const handleUpload = async () => {
     if (files.length === 0) {
       alert("Please select files first");
@@ -150,7 +146,6 @@ export const PastPerformance: React.FC<PastPerformanceProps> = ({
               </div>
               <FileUploader
                 onFileSelect={handleFileSelect}
-                onGoogleDriveSelect={handleGoogleDriveSelect}
               />
               
               {files.length > 0 && (
