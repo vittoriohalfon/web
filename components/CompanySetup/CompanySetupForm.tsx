@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { CompanyInfo } from "./CompanyInfo";
 import { FormSection } from "./FormSection";
 import { ProgressIndicator } from "./ProgressIndicator";
