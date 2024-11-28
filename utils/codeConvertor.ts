@@ -43,16 +43,13 @@ const countryCodeToFlagPath = (countryCode: string): string => {
     };
   
     const code = countryCode.toUpperCase().trim();
-    console.log(`Processing country code: "${code}"`);
     const mappedCountry = countryMapping[code];
     
     if (!mappedCountry) {
-      console.log(`Unknown country code: "${code}"`);
       return '/flags/eu.svg';
     }
     
     const flagPath = `/flags/${mappedCountry}.svg`;
-    console.log(`Successfully mapped to: ${flagPath}`);
     return flagPath;
   };
 
