@@ -16,7 +16,13 @@ export const FileManagementPage: React.FC<FileManagementPageProps> = ({ userCrea
       <div className="flex-1 ml-[312px]">
         <Header userCreatedAt={userCreatedAt} showNav={true} />
         <main className="container mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold mb-6 text-neutral-950">File Management</h1>
+          <div className="capabilities-section">
+            <h2 className="text-2xl font-bold mb-4 text-black">Capabilities and Past Performance</h2>
+            <p className="body-text-slim">
+              Upload files showcasing your company’s capabilities and past work to help Skim find new opportunities.
+              Don’t have them? Skim AI can guide you through the proposal process with ease.
+            </p>
+          </div>
           <FileManagement />
         </main>
       </div>

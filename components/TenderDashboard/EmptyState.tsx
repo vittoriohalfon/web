@@ -21,11 +21,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col items-center w-full min-h-screen">
       {showSearch && (
-        <div className="w-full max-w-[1200px] px-6 mb-6">
-          <SearchBar />
-        </div>
+        <section className="w-full bg-white border-t border-b border-solid border-y-zinc-300">
+          <div className="p-6 max-md:px-5">
+            <SearchBar />
+          </div>
+        </section>
       )}
       <div className="flex flex-col items-center self-center p-6 mt-20 max-w-full text-center bg-white rounded-lg w-[537px] max-md:px-5 max-md:mt-10">
         <img

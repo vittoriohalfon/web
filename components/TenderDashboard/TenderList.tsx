@@ -34,7 +34,7 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
         title="Get Started!"
         description="You haven't liked any tenders yet. Start exploring to find opportunities!"
         actionLabel="Start Search"
-        imageSrc="https://cdn.builder.io/api/v1/image/assets/TEMP/f8c8b848ef6c5cb291ea5f1227b8af001596c0f6316429fcbf1b61111d2ac444?placeholderIfAbsent=true&apiKey=94e3216da1274ce18b1afabc0138b324"
+        imageSrc="/logo-white.svg"
         showSearch={true}
         actionRoute="/dashboard"
       />
