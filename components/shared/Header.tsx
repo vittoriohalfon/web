@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
       }
 
       const data = await response.json();
-      window.location.href = data.url;
+      window.open(data.url, '_blank', 'noopener,noreferrer');
     } catch (error) {
       console.error("Payment error:", error);
     }
@@ -75,12 +75,15 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
             You have <span className="font-semibold text-indigo-700">{remainingDays}</span> days
             left of your free trial!
           </div>
-          <button 
+          <a 
             onClick={handleUpgradeClick}
             className="gap-2 self-stretch my-auto underline decoration-auto decoration-solid underline-offset-auto cursor-pointer hover:text-indigo-800"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="#"
           >
             Upgrade here
-          </button>
+          </a>
         </div>
       )}
       {showNav && (
