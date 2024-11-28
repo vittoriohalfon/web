@@ -23,7 +23,7 @@ export const ContractSummary: React.FC<ContractSummaryProps> = ({ data }) => {
           <div className="flex flex-col flex-1 shrink self-stretch my-auto basis-0">
             <div className="flex flex-col w-full">
               <div className="text-stone-500">Value of contract</div>
-              <div className="mt-2 text-neutral-950">{data.value}</div>
+              <div className="mt-2 text-neutral-950">{data.value ?? 'N/A'}</div>
             </div>
             <div className="flex flex-col mt-6 w-full whitespace-nowrap">
               <div className="text-stone-500">Status</div>

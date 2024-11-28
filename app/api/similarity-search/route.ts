@@ -15,6 +15,7 @@ interface SearchResult {
   deadline: string;
   published: string;
   lot_count: number;
+  is_liked: boolean;
 }
 
 interface SearchApiResponse {
@@ -110,30 +111,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get the headers from the incoming request
     const headers = request.headers;
 
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { company: true },
+      include: { 
+        company: true,
+        likedContracts: true 
+      },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
     }
 
-    // Get similarity search results
     const searchResults = await searchContracts(user);
-    
-    // Extract notice IDs from search results - fixing the property name and handling the split
     const noticeIds = searchResults.map((result) => 
       result.record_id.split('_')[0]
     );
-
-    // Remove duplicates to avoid querying the same notice multiple times
     const uniqueNoticeIds = [...new Set(noticeIds)];
 
-    // Pass the headers to fetchContractDetails
+    const likedContractIds = new Set(user.likedContracts.map(lc => lc.contractNoticeId));
+
     const contractDetails = await fetchContractDetails(uniqueNoticeIds, headers);
     
     const formattedContracts = contractDetails.map((contract: SearchResult) => ({
@@ -148,6 +147,7 @@ export async function POST(request: Request) {
       published: contract.published,
       lot_count: contract.lot_count,
       deadline: contract.deadline,
+      is_liked: likedContractIds.has(contract.notice_id)
     }));
 
     console.log('Formatted Contracts:', formattedContracts);

@@ -29,7 +29,11 @@ export default function DashboardPage() {
         }
 
         const data = await response.json();
-        setTenders(data.contracts || []);
+        const mappedTenders = (data.contracts || []).map((tender: any) => ({
+          ...tender,
+          isLiked: tender.is_liked
+        }));
+        setTenders(mappedTenders);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load tenders');
       } finally {

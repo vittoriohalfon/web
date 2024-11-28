@@ -21,11 +21,13 @@ interface TenderCardProps {
 }
 
 export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
-  const [isLiked, setIsLiked] = useState(tender.isLiked || false);
+  const [isLiked, setIsLiked] = useState(tender.isLiked);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
+    if (isLoading) return;
+    
     setIsLoading(true);
     
     try {
@@ -51,6 +53,31 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
     }
   };
 
+  const renderLikeButton = () => (
+    <button
+      onClick={handleLike}
+      disabled={isLoading}
+      className={`flex gap-1.5 justify-center items-center self-end px-4 py-1.5 my-auto text-sm font-semibold text-center whitespace-nowrap rounded-lg border border-solid w-[98px] transition-colors ${
+        isLiked 
+          ? 'text-white bg-indigo-700 border-indigo-700' 
+          : 'text-indigo-700 bg-white border-indigo-700'
+      }`}
+    >
+      <img 
+        loading="lazy" 
+        src={isLiked 
+          ? "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+          : "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+        } 
+        alt="" 
+        className={`object-contain shrink-0 self-stretch my-auto w-5 aspect-square ${isLiked ? 'filter invert' : ''}`}
+      />
+      <span className="self-stretch my-auto">
+        {isLoading ? '...' : (isLiked ? 'Saved' : 'Save')}
+      </span>
+    </button>
+  );
+
   return (
     <Link href={`/dashboard/${tender.id}`} className="block">
       <div className="flex flex-col gap-4 p-6 w-full bg-white rounded-lg border border-solid shadow-sm border-zinc-300 max-md:px-5 max-md:max-w-full hover:shadow-md transition-shadow">
@@ -70,28 +97,7 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
               </div>
             </div>
           </div>
-          <button
-            onClick={handleLike}
-            disabled={isLoading}
-            className={`flex gap-1.5 justify-center items-center self-end px-4 py-1.5 my-auto text-sm font-semibold text-center whitespace-nowrap rounded-lg border border-solid w-[98px] transition-colors ${
-              isLiked 
-                ? 'text-white bg-indigo-700 border-indigo-700' 
-                : 'text-indigo-700 bg-white border-indigo-700'
-            }`}
-          >
-            <img 
-              loading="lazy" 
-              src={isLiked 
-                ? "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                : "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-              } 
-              alt="" 
-              className={`object-contain shrink-0 self-stretch my-auto w-5 aspect-square ${isLiked ? 'filter invert' : ''}`}
-            />
-            <span className="self-stretch my-auto">
-              {isLoading ? '...' : (isLiked ? 'Saved' : 'Save')}
-            </span>
-          </button>
+          {renderLikeButton()}
         </div>
         <div className="flex flex-wrap gap-6 w-full max-md:max-w-full">
           <div className="flex flex-col grow shrink min-w-[240px] w-[763px] max-md:max-w-full">

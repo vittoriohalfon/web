@@ -31,6 +31,7 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
     <div className="flex flex-col gap-4 p-6 w-full max-md:px-5 max-md:max-w-full">
       {tenders.map((tender, index) => {
         console.log(`Tender ${index} country:`, tender.country);
+        console.log(`Tender budget:`, { amount: tender.amount, currency: tender.currency });
         return (
           <TenderCard 
             key={index} 
@@ -39,7 +40,9 @@ export const TenderList: React.FC<TenderListProps> = ({ tenders, loading, error 
               title: tender.title,
               description: tender.description,
               match: tender.match_percentage,
-              budget: tender.amount ? `${tender.currency} ${tender.amount.toLocaleString()}` : 'N/A',
+              budget: (tender.amount !== null && tender.amount !== undefined && tender.currency !== null && tender.currency !== undefined)
+                ? `${tender.currency} ${tender.amount.toLocaleString()}`
+                : 'N/A',
               country: tender.country || 'EU',
               countryFlag: tender.country 
                 ? countryCodeToFlagPath(tender.country)

@@ -307,21 +307,23 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId }) => {
             </section>
 
             <section className="mt-8">
-              <h2 className="text-xl font-semibold">Description</h2>
-              <p className="p-6 mt-4 text-base leading-6 rounded-lg border border-solid border-zinc-300 break-words">
+              <h2 className="text-xl font-semibold text-black">Description</h2>
+              <p className="p-6 mt-4 text-base leading-6 rounded-lg border border-solid border-zinc-300 break-words text-black">
                 {tenderData.description}
               </p>
             </section>
 
             <div className="flex flex-wrap gap-6 mt-8">
               <section className="flex-1 min-w-[240px] max-w-full">
-                <h2 className="text-xl font-semibold">Contract summary</h2>
-                <ContractSummary data={contractSummaryData} />
+                <h2 className="text-xl font-semibold text-black">Contract summary</h2>
+                <div className="mt-4">
+                  <ContractSummary data={contractSummaryData} />
+                </div>
               </section>
 
               <section className="flex-1 min-w-[240px] max-w-full">
-                <h2 className="text-xl font-semibold">Timeline</h2>
-                <div className="p-6 mt-4 rounded-lg border border-solid border-stone-300">
+                <h2 className="text-xl font-semibold text-black">Timeline</h2>
+                <div className="mt-4 rounded-lg border border-solid border-stone-300">
                   <Timeline items={timelineData} />
                 </div>
               </section>

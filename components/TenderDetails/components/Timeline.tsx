@@ -7,7 +7,7 @@ interface TimelineProps {
 
 export const Timeline: React.FC<TimelineProps> = ({ items }) => {
   return (
-    <div className="flex flex-col max-w-full w-[335px]">
+    <div className="flex flex-col max-w-full w-[335px] min-h-[296px] py-7 px-6">
       {items.map((item, index) => (
         <div key={index} className="flex gap-2 w-full">
           <div className="flex flex-col pb-2 my-auto w-11">
