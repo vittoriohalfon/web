@@ -90,6 +90,7 @@ export async function POST(req: Request) {
           data: {
             companyId: parseInt(body.companyId),
             fileUrl: `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
+            fileName: fileData.name,
             size: Math.floor(fileData.size),
             contentType: fileData.type
           },

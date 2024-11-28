@@ -54,6 +54,7 @@ model PastPerformance {
   company     Company  @relation(fields: [companyId], references: [id])
   companyId   Int
   fileUrl     String
+  fileName    String
   size        Int
   uploadedAt  DateTime @default(now())
   contentType String?
