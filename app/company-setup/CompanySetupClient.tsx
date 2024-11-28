@@ -64,9 +64,6 @@ export default function CompanySetupClient() {
           onComplete={handleComplete}
         />
       )}
-      <p className="body-text-slim">
-        Let&apos;s set up your organization.
-      </p>
     </div>
   );
 } 

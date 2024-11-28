@@ -16,11 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Clean up the domain (remove http://, https://, www., etc.)
-    const cleanDomain = domain.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
-    console.log("Cleaned domain:", cleanDomain);
-
-    const results: DomainInfoResult[] = await processDomainInfo(cleanDomain);
+    const results: DomainInfoResult[] = await processDomainInfo(domain);
     console.log("Processed results:", results);
 
     return NextResponse.json({ results }, { status: 200 });

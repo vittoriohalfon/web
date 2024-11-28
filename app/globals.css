@@ -22,6 +22,30 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.tender-card {
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.truncate-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.view-details {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 @layer components {
   .body-text-slim {
     @apply font-inter text-[#5D5D5D] text-base font-normal leading-[130%] self-stretch;
