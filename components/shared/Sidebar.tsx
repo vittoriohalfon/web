@@ -53,10 +53,11 @@ const NavigationItem: React.FC<NavigationItemProps> = ({ icon, label, isLogout =
 };
 
 const navigationItems = [
-  {
+  // Temporarily commenting out subscription
+  /*{
     icon: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/6e96891238ba811e21b60970c4579d00bc1d34f2f6eff6c30be8203f87055791?apiKey=27ce83af570848e9b22665bc31a03bc0&",
     label: "Subscription"
-  },
+  },*/
   {
     icon: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/48f73ac65e0b752fddf55cb1dbd9bb6a34f0d50c4d101e937222771001b50345?apiKey=27ce83af570848e9b22665bc31a03bc0&",
     label: "Logout",
@@ -138,14 +139,10 @@ export const Sidebar: React.FC = () => {
             ref={dropdownRef}
             className="absolute right-0 top-full mt-2 w-[280px] rounded-lg shadow-lg overflow-hidden"
           >
+            {/* Temporarily removing subscription button */}
             <NavigationItem
               icon={navigationItems[0].icon}
               label={navigationItems[0].label}
-              onClick={handleSubscription}
-            />
-            <NavigationItem
-              icon={navigationItems[1].icon}
-              label={navigationItems[1].label}
               isLogout
             >
               <SignOutButton />
