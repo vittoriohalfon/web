@@ -129,6 +129,3 @@ This web app aims to revolutionize government procurement. Dir schema:
     ├── findInfo.ts
     ├── sessionStorage.ts
     └── translate.ts
-
-4362 directories, 35622 files
-vittoriohalfon@Vittorios-MacBook-Air web % 
