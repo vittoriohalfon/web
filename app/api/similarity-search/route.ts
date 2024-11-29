@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { Company } from '@prisma/client';
 
-const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'https://main.d2nsziklf5c3pt.amplifyapp.com/';
 
 interface SearchResult {
   notice_id: string;
