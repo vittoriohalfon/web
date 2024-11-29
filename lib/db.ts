@@ -2,11 +2,11 @@ import { Pool } from 'pg';
 
 // Create a connection pool
 const db = new Pool({
-  host: process.env.AWS_DB_HOST,
-  port: parseInt(process.env.AWS_DB_PORT || '5432'),
-  database: process.env.AWS_DB_NAME,
-  user: process.env.AWS_DB_USER,
-  password: process.env.AWS_DB_PASS,
+  host: process.env.TENDERS_DB_HOST,
+  port: parseInt(process.env.TENDERS_DB_PORT || '5432'),
+  database: process.env.TENDERS_DB_NAME,
+  user: process.env.TENDERS_DB_USER,
+  password: process.env.TENDERS_DB_PASS,
   ssl: {
     rejectUnauthorized: false // Required for AWS RDS SSL connections
   }
