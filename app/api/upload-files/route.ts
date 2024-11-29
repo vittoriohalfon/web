@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     // Verify AWS credentials are present
-    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_REGION || !process.env.AWS_S3_BUCKET) {
+    if (!process.env.ACCESS_KEY_ID_AWS || !process.env.SECRET_ACCESS_KEY_AWS || !process.env.REGION_AWS || !process.env.S3_BUCKET_AWS) {
       console.error('Missing AWS credentials or configuration');
       return new Response('Server configuration error', { status: 500 });
     }

@@ -52,7 +52,7 @@ export async function POST(req: Request) {
             const fileExtension = fileName.split('.').pop();
             const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
             
-            const bucketName = process.env.AWS_S3_BUCKET as string;
+            const bucketName = process.env.S3_BUCKET_AWS as string;
             const key = `past-performance/${uniqueFileName}`;
 
             const command = new PutObjectCommand({
