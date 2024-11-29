@@ -129,3 +129,5 @@ This web app aims to revolutionize government procurement. Dir schema:
     ├── findInfo.ts
     ├── sessionStorage.ts
     └── translate.ts
+
+    let's see.
