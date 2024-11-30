@@ -5,6 +5,7 @@ import { decodeSpecialCharacters } from '@/utils/decodeSpecialChars';
 
 interface SpecificContractRequest {
   noticeId: string;
+  match_percentage: number;
 }
 
 interface SpecificContractResponse {
@@ -18,6 +19,7 @@ interface SpecificContractResponse {
     published: string;
     deadline: string;
     attachmentUri: string;
+    match_percentage: number;
     lots: Array<{
         lotId: string;
         title: string;
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { noticeId }: SpecificContractRequest = body;
+    const { noticeId, match_percentage }: SpecificContractRequest = body;
 
     if (!noticeId) {
       return NextResponse.json({ error: 'Notice ID is required' }, { status: 400 });
@@ -134,6 +136,7 @@ export async function POST(request: Request) {
       published: contract.published?.toISOString(),
       deadline: contract.deadline?.toISOString(),
       attachmentUri: contract.attachment_uri || '',
+      match_percentage: match_percentage,
       lots: lotsResult.rows.map(lot => ({
         lotId: lot.lot_id,
         title: decodeSpecialCharacters(lot.title),

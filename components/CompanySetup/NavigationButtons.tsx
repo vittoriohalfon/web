@@ -17,6 +17,19 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   isUploading,
   uploadButtonText = "Continue"
 }) => {
+  const getLoadingText = (buttonText: string) => {
+    switch (buttonText.toLowerCase()) {
+      case 'complete':
+        return 'Completing...';
+      case 'continue':
+        return 'Continuing...';
+      case 'upload':
+        return 'Uploading...';
+      default:
+        return `${buttonText}...`;
+    }
+  };
+
   return (
     <div className="flex flex-wrap gap-10 justify-between items-center mt-6 w-full text-base text-center whitespace-nowrap max-md:max-w-full">
       <button
@@ -48,7 +61,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           onClick={onUpload}
         >
           <span className="self-stretch my-auto">
-            {isUploading ? `${uploadButtonText}ing...` : uploadButtonText}
+            {isUploading ? getLoadingText(uploadButtonText) : uploadButtonText}
           </span>
         </button>
       </div>
