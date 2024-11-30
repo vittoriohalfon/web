@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
+    "build": "cross-env NODE_ENV=production prisma generate && next build",
+    "start": "cross-env NODE_ENV=production next start",
     "lint": "next lint",
     "postinstall": "npx prisma generate"
   },
@@ -43,6 +43,7 @@
     "aws-cdk": "^2.171.1",
     "aws-cdk-lib": "^2.171.1",
     "constructs": "^10.4.2",
+    "cross-env": "^7.0.3",
     "esbuild": "^0.24.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.3",

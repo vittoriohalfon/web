@@ -65,7 +65,7 @@ export async function POST(req: Request) {
         const base64Data = fileData.content.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
 
-        const bucketName = process.env.AWS_S3_BUCKET as string;
+        const bucketName = process.env.S3_BUCKET_AWS as string;
         const key = `past-performance/${uniqueFileName}`;
 
         console.log('Uploading to S3:', {
