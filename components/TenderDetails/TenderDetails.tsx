@@ -12,7 +12,7 @@ import { Header } from "../shared/Header";
 
 interface TenderDetailsProps {
   tenderId: string;
-  match_percentage: number;
+  match_percentage?: number;
 }
 
 interface TenderData {
@@ -57,7 +57,10 @@ const statusItems = [
   { icon: "https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/32d40899edb8932b2fb12f2ee60223fd8b6cac6c8b64d04ca81b97e9e27646e3?apiKey=27ce83af570848e9b22665bc31a03bc0&", label: "Lost" }
 ];
 
-export const TenderDetails: React.FC<TenderDetailsProps> = ({ tenderId, match_percentage }) => {
+export const TenderDetails: React.FC<TenderDetailsProps> = ({ 
+  tenderId, 
+  match_percentage = 0
+}) => {
   const [tenderData, setTenderData] = React.useState<TenderData | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);

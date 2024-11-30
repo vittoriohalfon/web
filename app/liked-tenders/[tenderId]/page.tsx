@@ -14,5 +14,5 @@ export const metadata: Metadata = {
 
 export default async function LikedTenderDetailsPage({ params }: Props) {
   const { tenderId } = await params;
-  return <TenderDetails tenderId={tenderId} />;
+  return <TenderDetails tenderId={tenderId} match_percentage={0} />;
 } 
