@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 // Use default credentials chain (will look for ~/.aws/credentials)
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || 'eu-central-1'
+  region: process.env.REGION_AWS || 'eu-central-1'
 });
 
 interface FileData {

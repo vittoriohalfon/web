@@ -4,7 +4,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { prisma } from "@/lib/prisma";
 
 const s3Client = new S3Client({
-    region: process.env.AWS_REGION || 'eu-central-1'
+    region: process.env.REGION_AWS || 'eu-central-1'
 });
 
 export async function POST(req: Request) {
