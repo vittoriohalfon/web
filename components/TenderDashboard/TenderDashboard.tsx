@@ -4,7 +4,7 @@
 import React from "react";
 import { Sidebar } from "../shared/Sidebar";
 import { SearchBar } from "./SearchBar";
-import { FilterBar } from "./FilterBar";
+// import { FilterBar } from "./FilterBar";
 import { TenderList } from "./TenderList";
 import { Header } from "../shared/Header";
 import { Tender } from "@/types/tender";
@@ -29,7 +29,7 @@ export const TenderDashboard: React.FC<TenderDashboardProps> = ({ tenders, loadi
         {showFilters && (
           <section className="flex flex-col justify-center p-6 w-full bg-white border-t border-b border-solid border-y-zinc-300 max-md:px-5 max-md:max-w-full">
             <SearchBar />
-            <FilterBar />
+            {/* <FilterBar /> */}
           </section>
         )}
         <TenderList tenders={tenders} loading={loading} error={error} />
