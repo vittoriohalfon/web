@@ -24,17 +24,27 @@ interface SearchApiResponse {
 
 async function searchContracts(user: { company: Company | null }): Promise<SearchApiResponse[]> {
   try {
+    console.log('Starting searchContracts function...');
     const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
     if (!apiUrl) {
+      console.error('API Gateway URL is missing in environment variables');
       throw new Error('API Gateway URL is not defined');
     }
 
     if (!user.company) {
+      console.error('User company data is missing:', user);
       throw new Error('Company profile not found');
     }
 
-    // Construct a more concise search text using company information
+    // Construct search text with logging
+    console.log('Company data:', {
+      sector: user.company.industrySector,
+      products: user.company.coreProductsServices,
+      usp: user.company.uniqueSellingPoint,
+      geo: user.company.geographicFocus
+    });
+
     const searchText = [
       user.company.industrySector && `Industry: ${user.company.industrySector}.`,
       user.company.coreProductsServices && `Products/Services: ${user.company.coreProductsServices}.`,
@@ -43,31 +53,41 @@ async function searchContracts(user: { company: Company | null }): Promise<Searc
     ]
       .filter(Boolean)
       .join(' ')
-      .slice(0, 1000); // Limit text to 1000 characters
+      .slice(0, 1000);
 
-    console.log('Search Text:', searchText);
+    console.log('Constructed search text:', searchText);
+    console.log('Making API request to:', apiUrl);
 
-    const requestBody = { text: searchText };
-    
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({ text: searchText }),
     });
 
+    console.log('API Response Status:', response.status);
+    console.log('API Response Headers:', Object.fromEntries(response.headers.entries()));
+
     const responseData = await response.json();
-    console.log('Response Status:', response.status);
-    console.log('Response Data:', responseData);
+    console.log('API Response Data:', responseData);
 
     if (!response.ok) {
+      console.error('API request failed:', {
+        status: response.status,
+        data: responseData,
+        url: apiUrl
+      });
       throw new Error(responseData.error || `API request failed with status ${response.status}`);
     }
 
     return responseData as SearchApiResponse[];
   } catch (error) {
-    console.error('Error in searchContracts:', error);
+    console.error('Detailed error in searchContracts:', {
+      error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
     throw error;
   }
 }

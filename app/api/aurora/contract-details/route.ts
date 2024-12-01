@@ -25,34 +25,35 @@ interface ContractDetailsResponse {
 
 export async function POST(request: Request) {
   try {
+    console.log('Starting contract-details POST request...');
+    
     const { userId } = await auth();
     if (!userId) {
+      console.log('Authentication failed: No userId found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    console.log('Authenticated userId:', userId);
+
     const body = await request.json() as ContractRequest;
+    console.log('Received request body:', body);
     
-    // Extract the contracts array from the body
     const { contracts } = body;
     
     if (!Array.isArray(contracts)) {
+      console.error('Invalid contracts format:', contracts);
       return NextResponse.json({ error: 'Invalid request format' }, { status: 400 });
     }
 
-    // Extract unique notice IDs directly from noticeId field
-    const uniqueNoticeIds = [...new Set(
-      contracts.map(c => c.noticeId)
-    )];
-
-    console.log('Unique Notice IDs:', uniqueNoticeIds);
+    const uniqueNoticeIds = [...new Set(contracts.map(c => c.noticeId))];
+    console.log('Processing unique notice IDs:', uniqueNoticeIds);
 
     if (uniqueNoticeIds.length === 0) {
+      console.log('No notice IDs provided, returning empty result');
       return NextResponse.json({ contracts: [] });
     }
 
-    // Create the parameterized query
     const placeholders = uniqueNoticeIds.map((_, i) => `$${i + 1}`).join(',');
-    
     const query = `
       SELECT
         bn.notice_id,
@@ -80,41 +81,59 @@ export async function POST(request: Request) {
         rl.country_code
     `;
 
-    // Log the query and parameters for debugging
-    console.log('Query:', query);
-    console.log('Parameters:', uniqueNoticeIds);
-
-    const result = await db.query(query, uniqueNoticeIds);
-    
-    // Log the query results
-    console.log('Query results:', result.rows);
-
-    const contractDetails: ContractDetailsResponse[] = result.rows.map(row => {
-      // Find the original contract request to get the lotId
-      const originalContract = contracts.find(c => c.noticeId === row.notice_id);
-      const record_id = originalContract?.lotId ? 
-        `${row.notice_id}_${originalContract.lotId}` : 
-        row.notice_id;
-
-      return {
-        record_id,
-        notice_id: row.notice_id,
-        title: decodeSpecialCharacters(row.title),
-        description: decodeSpecialCharacters(row.description),
-        estimated_value: parseFloat(row.estimated_value),
-        currency: row.currency,
-        country: row.country,
-        deadline: row.deadline?.toISOString(),
-        published: row.published?.toISOString(),
-        lot_count: row.lot_count ? parseInt(row.lot_count, 10) : 1
-      };
+    console.log('Executing SQL query:', {
+      query,
+      parameters: uniqueNoticeIds
     });
 
-    return NextResponse.json({ contracts: contractDetails });
+    try {
+      const result = await db.query(query, uniqueNoticeIds);
+      console.log('Query executed successfully, row count:', result.rowCount);
+      console.log('First row sample:', result.rows[0]);
+
+      const contractDetails: ContractDetailsResponse[] = result.rows.map(row => {
+        const originalContract = contracts.find(c => c.noticeId === row.notice_id);
+        const record_id = originalContract?.lotId ? 
+          `${row.notice_id}_${originalContract.lotId}` : 
+          row.notice_id;
+
+        const mappedContract = {
+          record_id,
+          notice_id: row.notice_id,
+          title: decodeSpecialCharacters(row.title),
+          description: decodeSpecialCharacters(row.description),
+          estimated_value: parseFloat(row.estimated_value),
+          currency: row.currency,
+          country: row.country,
+          deadline: row.deadline?.toISOString(),
+          published: row.published?.toISOString(),
+          lot_count: row.lot_count ? parseInt(row.lot_count, 10) : 1
+        };
+
+        console.log('Mapped contract:', mappedContract);
+        return mappedContract;
+      });
+
+      return NextResponse.json({ contracts: contractDetails });
+    } catch (dbError) {
+      console.error('Database query error:', {
+        error: dbError,
+        message: dbError instanceof Error ? dbError.message : 'Unknown database error',
+        stack: dbError instanceof Error ? dbError.stack : undefined
+      });
+      throw dbError;
+    }
   } catch (error) {
-    console.error('Error fetching contract details:', error);
+    console.error('Detailed error in contract-details route:', {
+      error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      type: error instanceof Error ? error.constructor.name : typeof error
+    });
+    
     return NextResponse.json({ 
       error: 'Internal Server Error',
+      details: error instanceof Error ? error.message : 'Unknown error',
       contracts: [] 
     }, { status: 500 });
   }
