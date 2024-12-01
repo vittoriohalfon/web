@@ -9,6 +9,7 @@ import { Sidebar } from "../shared/Sidebar";
 import { BidStatusList } from "./components/BidStatusList";
 import { countryCodeToFlagPath } from "@/utils/codeConvertor";
 import { Header } from "../shared/Header";
+import { useState } from 'react';
 
 interface TenderDetailsProps {
   tenderId: string;
@@ -44,6 +45,7 @@ interface TenderData {
     address_postal: string;
     address_country: string;
   }>;
+  isLiked?: boolean;
 }
 
 const statusItems = [
@@ -70,6 +72,8 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
     icon: string;
   } | null>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
 
   React.useEffect(() => {
     const fetchTenderData = async () => {
@@ -119,6 +123,35 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
       setCurrentStatus(selectedStatus);
     }
     setShowBidStatus(false);
+  };
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isLikeLoading) return;
+    
+    setIsLikeLoading(true);
+    
+    try {
+      const response = await fetch('/api/like-tender', {
+        method: isLiked ? 'DELETE' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contractNoticeId: tenderId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${isLiked ? 'unlike' : 'like'} tender`);
+      }
+
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error('Error updating tender like status:', error);
+    } finally {
+      setIsLikeLoading(false);
+    }
   };
 
   if (isLoading) {
@@ -303,14 +336,24 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
                 >
                   Download PDF
                 </button>
-                <button className="flex gap-1.5 justify-center items-center self-stretch px-4 py-1.5 my-auto font-semibold text-center text-indigo-700 whitespace-nowrap bg-white rounded-lg border border-indigo-700 border-solid w-[98px]">
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/b8dc9f27b9c1b6675ba8db9fc0a9742daf6f75a9ba1a3fe27bd3ec30efbced76?apiKey=27ce83af570848e9b22665bc31a03bc0&"
-                    alt=""
-                    className="object-contain shrink-0 self-stretch my-auto w-5 aspect-square"
+                <button
+                  onClick={handleLike}
+                  disabled={isLikeLoading}
+                  className={`flex gap-1.5 justify-center items-center self-stretch px-4 py-1.5 my-auto font-semibold text-center whitespace-nowrap rounded-lg border border-solid w-[98px] transition-colors ${
+                    isLiked 
+                      ? 'text-white bg-indigo-700 border-indigo-700' 
+                      : 'text-indigo-700 bg-white border-indigo-700'
+                  }`}
+                >
+                  <img 
+                    loading="lazy" 
+                    src="https://cdn.builder.io/api/v1/image/assets/27ce83af570848e9b22665bc31a03bc0/4184fe14b05777820a3ea75eef05410c5bdd64ded986d04673b911ecbbeb4e9f?apiKey=27ce83af570848e9b22665bc31a03bc0&"
+                    alt="" 
+                    className={`object-contain shrink-0 self-stretch my-auto w-5 aspect-square ${isLiked ? 'filter invert' : ''}`}
                   />
-                  <span className="self-stretch my-auto">Like</span>
+                  <span className="self-stretch my-auto">
+                    {isLikeLoading ? '...' : (isLiked ? 'Saved' : 'Save')}
+                  </span>
                 </button>
               </div>
             </section>
