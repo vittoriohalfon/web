@@ -3,12 +3,22 @@ import '@/app/globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import localFont from 'next/font/local';
 import type { Metadata } from 'next';
+import Hotjar from '@hotjar/browser';
 
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+// Initialize Hotjar
+const hotjarSiteId = 5228160;
+const hotjarVersion = 6;
+
+// Only initialize Hotjar if not in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'development') {
+  Hotjar.init(hotjarSiteId, hotjarVersion);
+}
 
 export const metadata: Metadata = {
   title: "Skim Application",
