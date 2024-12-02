@@ -25,18 +25,13 @@ interface ContractDetailsResponse {
 
 export async function POST(request: Request) {
   try {
-    console.log('Starting contract-details POST request...');
-    
     const { userId } = await auth();
     if (!userId) {
       console.log('Authentication failed: No userId found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log('Authenticated userId:', userId);
-
     const body = await request.json() as ContractRequest;
-    console.log('Received request body:', body);
     
     const { contracts } = body;
     
@@ -46,7 +41,6 @@ export async function POST(request: Request) {
     }
 
     const uniqueNoticeIds = [...new Set(contracts.map(c => c.noticeId))];
-    console.log('Processing unique notice IDs:', uniqueNoticeIds);
 
     if (uniqueNoticeIds.length === 0) {
       console.log('No notice IDs provided, returning empty result');
@@ -81,15 +75,9 @@ export async function POST(request: Request) {
         rl.country_code
     `;
 
-    console.log('Executing SQL query:', {
-      query,
-      parameters: uniqueNoticeIds
-    });
-
     try {
       const result = await db.query(query, uniqueNoticeIds);
       console.log('Query executed successfully, row count:', result.rowCount);
-      console.log('First row sample:', result.rows[0]);
 
       const contractDetails: ContractDetailsResponse[] = result.rows.map(row => {
         const originalContract = contracts.find(c => c.noticeId === row.notice_id);

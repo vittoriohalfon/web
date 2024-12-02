@@ -113,16 +113,12 @@ function getCountryCode(countryName: string): string | null {
 
 async function hybridSearchContracts(searchText: string, primaryFocus: string = 'all'): Promise<HybridSearchApiResponse[]> {
   try {
-    console.log('Starting searchContracts function...');
     const apiUrl = process.env.HYBRID_SEARCH_API_GATEWAY_URL_LOT;
 
     if (!apiUrl) {
       console.error('API Gateway URL is missing in environment variables');
       throw new Error('API Gateway URL is not defined');
     }
-
-    console.log('Search text received:', searchText);
-    console.log('Primary focus:', primaryFocus);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -226,7 +222,6 @@ export async function POST(request: Request) {
     const validatedFocus = validFocuses.includes(primaryFocus) ? primaryFocus : 'all';
 
     const searchResults = await hybridSearchContracts(searchText, validatedFocus);
-    console.log('Search Results:', searchResults);
 
     const noticeIds = searchResults.map(result => result.notice_id.split('_')[0]);
     const contractDetails = await fetchContractDetails(noticeIds, request.headers);

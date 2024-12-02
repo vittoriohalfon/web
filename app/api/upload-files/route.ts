@@ -23,10 +23,6 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    console.log('Received request body:', {
-      companyId: body.companyId,
-      filesCount: body.files?.length
-    });
 
     if (!body.files || !Array.isArray(body.files)) {
       console.error('No files array in request body');
@@ -45,11 +41,6 @@ export async function POST(req: Request) {
     }
 
     const uploadPromises = body.files.map(async (fileData: FileData) => {
-      console.log('Processing file:', {
-        name: fileData.name,
-        size: fileData.size,
-        type: fileData.type
-      });
 
       if (!fileData.content) {
         console.error('File content is missing for:', fileData.name);
@@ -68,12 +59,6 @@ export async function POST(req: Request) {
         const bucketName = process.env.S3_BUCKET_AWS as string;
         const key = `past-performance/${uniqueFileName}`;
 
-        console.log('Uploading to S3:', {
-          bucket: bucketName,
-          key: key,
-          contentType: fileData.type
-        });
-
         // Upload to S3
         const command = new PutObjectCommand({
           Bucket: bucketName,
@@ -83,7 +68,6 @@ export async function POST(req: Request) {
         });
 
         await s3Client.send(command);
-        console.log('Successfully uploaded to S3:', uniqueFileName);
 
         // Create file record in database
         const fileRecord = await prisma.pastPerformance.create({
@@ -95,7 +79,6 @@ export async function POST(req: Request) {
             contentType: fileData.type
           },
         });
-        console.log('Created file record:', fileRecord);
 
         return fileRecord;
       } catch (error) {
@@ -105,7 +88,6 @@ export async function POST(req: Request) {
     });
 
     const results = await Promise.all(uploadPromises);
-    console.log('Successfully uploaded all files:', results.length);
 
     return new Response(JSON.stringify({ success: true, files: results }), {
       status: 200,

@@ -24,7 +24,6 @@ interface HybridSearchApiResponse {
 
 async function hybridSearchContracts(user: { company: Company | null }): Promise<HybridSearchApiResponse[]> {
   try {
-    console.log('Starting searchContracts function...');
     const apiUrl = process.env.HYBRID_SEARCH_API_GATEWAY_URL;
 
     if (!apiUrl) {
@@ -56,7 +55,6 @@ async function hybridSearchContracts(user: { company: Company | null }): Promise
       .slice(0, 1000);
 
     console.log('Constructed search text:', searchText);
-    console.log('Making API request to:', apiUrl);
 
     const response = await fetch(apiUrl, {
       method: 'POST',

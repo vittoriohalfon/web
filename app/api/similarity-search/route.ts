@@ -109,7 +109,6 @@ function getCountryCode(countryName: string): string | null {
 
 async function searchContracts(user: { company: Company | null }): Promise<SearchApiResponse[]> {
   try {
-    console.log('Starting searchContracts function...');
     const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
     if (!apiUrl) {
@@ -122,14 +121,6 @@ async function searchContracts(user: { company: Company | null }): Promise<Searc
       throw new Error('Company profile not found');
     }
 
-    // Construct search text with logging
-    console.log('Company data:', {
-      sector: user.company.industrySector,
-      products: user.company.coreProductsServices,
-      usp: user.company.uniqueSellingPoint,
-      geo: user.company.geographicFocus
-    });
-
     const searchText = [
       user.company.industrySector && `Industry: ${user.company.industrySector}.`,
       user.company.coreProductsServices && `Products/Services: ${user.company.coreProductsServices}.`,
@@ -138,7 +129,7 @@ async function searchContracts(user: { company: Company | null }): Promise<Searc
     ]
       .filter(Boolean)
       .join(' ')
-      .slice(0, 1000);
+      .slice(0, 1500);
 
     console.log('Constructed search text:', searchText);
 
@@ -150,11 +141,7 @@ async function searchContracts(user: { company: Company | null }): Promise<Searc
       body: JSON.stringify({ text: searchText }),
     });
 
-    console.log('API Response Status:', response.status);
-    console.log('API Response Headers:', Object.fromEntries(response.headers.entries()));
-
     const responseData = await response.json();
-    console.log('API Response Data:', responseData);
 
     if (!response.ok) {
       console.error('API request failed:', {
@@ -241,10 +228,8 @@ export async function POST(request: Request) {
     
     // Get user's company country code
     const userLocation = user.company?.primaryLocation;
-    console.log('Raw user location from database:', userLocation);
     
     const userCountryCode = userLocation ? getCountryCode(userLocation) : null;
-    console.log('Mapped user country code:', userCountryCode);
 
     const formattedContracts = contractDetails.map((contract: SearchResult) => ({
       notice_id: contract.notice_id,
@@ -273,8 +258,6 @@ export async function POST(request: Request) {
         return 0;
       });
     }
-
-    console.log('Formatted Contracts:', formattedContracts);
     
     return NextResponse.json({
       contracts: formattedContracts,

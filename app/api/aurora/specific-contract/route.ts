@@ -155,8 +155,6 @@ export async function POST(request: Request) {
         address_country: buyer.address_country_code || ''
       }))
     };
-
-    console.log(response);
     return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching contract details:', error);
