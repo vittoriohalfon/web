@@ -41,6 +41,7 @@ model Company {
   website                String
   annualTurnover         String?
   primaryLocation        String?
+  primaryFocus           String?
   experienceWithTenders  Boolean  @default(false)
   industrySector         String?
   companyOverview        String?
