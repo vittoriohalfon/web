@@ -123,7 +123,6 @@ async function hybridSearchContracts(searchText: string, primaryFocus: string = 
 
     console.log('Search text received:', searchText);
     console.log('Primary focus:', primaryFocus);
-    console.log('Making API request to:', apiUrl);
 
     const response = await fetch(apiUrl, {
       method: 'POST',

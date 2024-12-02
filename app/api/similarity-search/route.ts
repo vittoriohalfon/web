@@ -141,7 +141,6 @@ async function searchContracts(user: { company: Company | null }): Promise<Searc
       .slice(0, 1000);
 
     console.log('Constructed search text:', searchText);
-    console.log('Making API request to:', apiUrl);
 
     const response = await fetch(apiUrl, {
       method: 'POST',

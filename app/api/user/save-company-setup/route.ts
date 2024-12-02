@@ -139,28 +139,6 @@ export async function POST(req: Request) {
       companyId = company.id;
     }
 
-    // Handle final steps data
-    if (data.finalSteps) {
-      await prisma.userPreference.upsert({
-        where: { userId: user.id },
-        update: {
-          goal: data.finalSteps.goal,
-          referralSource: data.finalSteps.feedbackSource
-        },
-        create: {
-          userId: user.id,
-          goal: data.finalSteps.goal,
-          referralSource: data.finalSteps.feedbackSource
-        },
-      });
-
-      // Update user's setupComplete status again to ensure it's set
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { setupComplete: true }
-      });
-    }
-
     return NextResponse.json({ 
       success: true,
       companyId,
