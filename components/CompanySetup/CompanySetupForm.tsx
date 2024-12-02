@@ -43,8 +43,9 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
     companyWebsite: "",
     annualTurnover: "",
     primaryLocation: "",
+    primaryFocus: "",
     hasTenderExperience: false,
-    termsAccepted: false,
+    termsAccepted: false
   });
 
   const [dropdownOptions] = useState<DropdownOptions>({
@@ -79,8 +80,12 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
       "Spain",
       "Sweden",
       "Other (please specify)"
+    ],
+    focus: [
+      "Supplies",
+      "Services",
+      "Both"
     ]
-
   });
 
   const [editableFields, setEditableFields] = useState<EditableFields>({
@@ -106,6 +111,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
           companyWebsite: data.website || "",
           annualTurnover: data.annualTurnover || "",
           primaryLocation: data.primaryLocation || "",
+          primaryFocus: data.primaryFocus || "",
           hasTenderExperience: data.experienceWithTenders || false,
           termsAccepted: false,
         });
@@ -246,6 +252,7 @@ export const CompanySetupForm: React.FC<CompanySetupFormProps> = ({ onNext }) =>
       formData.companyWebsite &&
       formData.annualTurnover &&
       formData.primaryLocation &&
+      formData.primaryFocus &&
       formData.termsAccepted
     );
   };

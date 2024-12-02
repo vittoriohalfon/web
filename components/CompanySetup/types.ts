@@ -3,6 +3,7 @@ export interface FormData {
   companyWebsite: string;
   annualTurnover: string;
   primaryLocation: string;
+  primaryFocus: string;
   hasTenderExperience: boolean;
   termsAccepted: boolean;
 }
@@ -21,6 +22,7 @@ export interface EditableFields {
 export interface DropdownOptions {
   turnover: string[];
   locations: string[];
+  focus: string[];
 }
 
 export enum SetupStep {

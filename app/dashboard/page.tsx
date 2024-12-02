@@ -44,5 +44,13 @@ export default function DashboardPage() {
     fetchTenders();
   }, [getToken]);
 
-  return <TenderDashboard tenders={tenders} loading={loading} error={error} />;
+  return (
+    <TenderDashboard 
+      initialTenders={tenders} 
+      loading={loading} 
+      error={error}
+      setLoading={setLoading}
+      setError={setError}
+    />
+  );
 }

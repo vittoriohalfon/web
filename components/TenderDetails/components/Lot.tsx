@@ -8,6 +8,10 @@ interface LotProps {
 export const Lot: React.FC<LotProps> = ({ lot }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
+  const formattedValue = lot.estimatedValue 
+    ? `€${lot.estimatedValue.toLocaleString()}`
+    : 'N/A';
+
   return (
     <div className="flex flex-col p-6 w-full bg-white rounded-lg border border-solid shadow-sm border-zinc-300 max-md:px-5">
       <div 
@@ -42,7 +46,7 @@ export const Lot: React.FC<LotProps> = ({ lot }) => {
             <div>
               <div className="text-stone-500">Estimated Value</div>
               <div className="mt-2 text-neutral-950 break-words">
-                €{lot.estimatedValue.toLocaleString()}
+                {formattedValue}
               </div>
             </div>
             <div>

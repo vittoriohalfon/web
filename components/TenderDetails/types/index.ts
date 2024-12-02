@@ -10,7 +10,7 @@ interface TimelineItem {
     title: string;
     description: string;
     procurementType: string;
-    estimatedValue: number;
+    estimatedValue: number | null;
     isExpanded?: boolean;
   }
   

@@ -9,6 +9,9 @@ interface EmptyStateProps {
   imageSrc: string;
   showSearch?: boolean;
   actionRoute?: string;
+  onSearchResults?: (results: any[]) => void;
+  setLoading?: (loading: boolean) => void;
+  setError?: (error: string | null) => void;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -17,15 +20,23 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionLabel,
   imageSrc,
   showSearch = false,
+  actionRoute = '/dashboard',
+  onSearchResults,
+  setLoading,
+  setError
 }) => {
   const router = useRouter();
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen">
-      {showSearch && (
+      {showSearch && onSearchResults && setLoading && setError && (
         <section className="w-full bg-white border-t border-b border-solid border-y-zinc-300">
           <div className="p-6 max-md:px-5">
-            <SearchBar />
+            <SearchBar 
+              onSearchResults={onSearchResults}
+              setLoading={setLoading}
+              setError={setError}
+            />
           </div>
         </section>
       )}
@@ -41,7 +52,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           <p className="mt-2 text-base leading-6 max-md:max-w-full">{description}</p>
         </div>
         <button
-          onClick={() => router.push('/dashboard')}
+          onClick={() => router.push(actionRoute)}
           className="justify-center px-4 py-2.5 mt-6 text-base font-medium text-white bg-indigo-700 rounded-lg hover:bg-indigo-800 transition-colors w-full max-w-[320px]"
         >
           {actionLabel}

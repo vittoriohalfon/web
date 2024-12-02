@@ -67,6 +67,13 @@ export const FormSection: React.FC<FormSectionProps> = ({
         options={dropdownOptions.locations}
         placeholder="Select Your Primary Location"
       />
+      <SelectField
+        label="What is the primary focus of your business?*"
+        value={formData.primaryFocus}
+        onChange={(value) => updateFormField("primaryFocus", value)}
+        options={dropdownOptions.focus}
+        placeholder="Select Your Primary Focus"
+      />
       <CheckboxField
         label="Do you have experience applying for government tenders?"
         checked={formData.hasTenderExperience}

@@ -7,6 +7,7 @@ interface CompanySetup {
   companyWebsite: string;
   annualTurnover: string;
   primaryLocation: string;
+  primaryFocus: string;
   hasTenderExperience: boolean;
 }
 
@@ -78,6 +79,7 @@ export async function POST(req: Request) {
         website: string;
         annualTurnover: string;
         primaryLocation: string;
+        primaryFocus: string;
         experienceWithTenders: boolean;
         industrySector: string;
         companyOverview: string;
@@ -94,6 +96,7 @@ export async function POST(req: Request) {
           website: data.companySetup.companyWebsite,
           annualTurnover: data.companySetup.annualTurnover,
           primaryLocation: data.companySetup.primaryLocation,
+          primaryFocus: data.companySetup.primaryFocus,
           experienceWithTenders: data.companySetup.hasTenderExperience,
         });
       }
@@ -122,6 +125,7 @@ export async function POST(req: Request) {
           website: data.companySetup?.companyWebsite || '',
           annualTurnover: data.companySetup?.annualTurnover || '',
           primaryLocation: data.companySetup?.primaryLocation || '',
+          primaryFocus: data.companySetup?.primaryFocus || '',
           experienceWithTenders: data.companySetup?.hasTenderExperience || false,
           industrySector: data.editableFields?.industrySector || '',
           companyOverview: data.editableFields?.companyOverview || '',
