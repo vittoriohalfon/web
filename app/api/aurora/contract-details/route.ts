@@ -109,8 +109,6 @@ export async function POST(request: Request) {
           published: row.published?.toISOString(),
           lot_count: row.lot_count ? parseInt(row.lot_count, 10) : 1
         };
-
-        console.log('Mapped contract:', mappedContract);
         return mappedContract;
       });
 

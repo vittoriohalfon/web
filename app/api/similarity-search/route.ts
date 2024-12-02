@@ -22,6 +22,91 @@ interface SearchApiResponse {
   record_id: string;
 }
 
+const COUNTRY_CODE_MAP: { [key: string]: string } = {
+  'ITA': 'Italy',
+  'ESP': 'Spain', 
+  'IRL': 'Ireland',
+  'NOR': 'Norway',
+  'FRA': 'France',
+  'DEU': 'Germany',
+  'NLD': 'Netherlands',
+  'BEL': 'Belgium',
+  'POL': 'Poland',
+  'PRT': 'Portugal',
+  'ROU': 'Romania',
+  'AUT': 'Austria',
+  'SWE': 'Sweden',
+  'FIN': 'Finland',
+  'DNK': 'Denmark',
+  'CZE': 'Czech-republic',
+  'GRC': 'Greece',
+  'BGR': 'Bulgaria',
+  'HRV': 'Croatia',
+  'SVK': 'Slovakia',
+  'LTU': 'Lithuania',
+  'LVA': 'Latvia',
+  'EST': 'Estonia',
+  'CYP': 'Cyprus',
+  'HUN': 'Hungary',
+  'SVN': 'Slovenia',
+  'LUX': 'Luxembourg',
+  'MLT': 'Malta'
+};
+
+function getCountryCode(countryName: string): string | null {
+  if (!countryName) return null;
+  
+  const normalizedCountryName = countryName.toLowerCase().trim();
+  
+  // Direct mapping for common variations
+  const specialCases: { [key: string]: string } = {
+    'ireland': 'IRL',
+    'italy': 'ITA',
+    'spain': 'ESP',
+    'norway': 'NOR',
+    'france': 'FRA',
+    'germany': 'DEU',
+    'netherlands': 'NLD',
+    'belgium': 'BEL',
+    'poland': 'POL',
+    'portugal': 'PRT',
+    'romania': 'ROU',
+    'austria': 'AUT',
+    'sweden': 'SWE',
+    'finland': 'FIN',
+    'denmark': 'DNK',
+    'czech republic': 'CZE',
+    'czech-republic': 'CZE',
+    'greece': 'GRC',
+    'bulgaria': 'BGR',
+    'croatia': 'HRV',
+    'slovakia': 'SVK',
+    'lithuania': 'LTU',
+    'latvia': 'LVA',
+    'estonia': 'EST',
+    'cyprus': 'CYP',
+    'hungary': 'HUN',
+    'slovenia': 'SVN',
+    'luxembourg': 'LUX',
+    'malta': 'MLT'
+  };
+
+  // Check for direct match in special cases
+  if (specialCases[normalizedCountryName]) {
+    return specialCases[normalizedCountryName];
+  }
+
+  // Fallback to original mapping if needed
+  for (const [code, name] of Object.entries(COUNTRY_CODE_MAP)) {
+    if (name.toLowerCase() === normalizedCountryName) {
+      return code;
+    }
+  }
+
+  console.log(`Could not map country name: "${countryName}" to a country code`);
+  return null;
+}
+
 async function searchContracts(user: { company: Company | null }): Promise<SearchApiResponse[]> {
   try {
     console.log('Starting searchContracts function...');
@@ -155,6 +240,13 @@ export async function POST(request: Request) {
 
     const contractDetails = await fetchContractDetails(uniqueNoticeIds, headers);
     
+    // Get user's company country code
+    const userLocation = user.company?.primaryLocation;
+    console.log('Raw user location from database:', userLocation);
+    
+    const userCountryCode = userLocation ? getCountryCode(userLocation) : null;
+    console.log('Mapped user country code:', userCountryCode);
+
     const formattedContracts = contractDetails.map((contract: SearchResult) => ({
       notice_id: contract.notice_id,
       title: contract.title,
@@ -170,10 +262,28 @@ export async function POST(request: Request) {
       is_liked: likedContractIds.has(contract.notice_id)
     }));
 
+    // Sort contracts to prioritize user's country if available
+    if (userCountryCode) {
+
+      formattedContracts.sort((a, b) => {
+        const aIsUserCountry = a.country === userCountryCode;
+        const bIsUserCountry = b.country === userCountryCode;
+        
+        if (aIsUserCountry && !bIsUserCountry) return -1;
+        if (!aIsUserCountry && bIsUserCountry) return 1;
+        return 0;
+      });
+    }
+
     console.log('Formatted Contracts:', formattedContracts);
     
     return NextResponse.json({
-      contracts: formattedContracts
+      contracts: formattedContracts,
+      debug: {
+        userCountry: userLocation,
+        userCountryCode,
+        contractCountries: formattedContracts.map(c => c.country)
+      }
     });
   } catch (error) {
     console.error('Error in similarity search:', error);

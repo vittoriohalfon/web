@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useRouter } from 'next/navigation';
 import { SearchBar } from "./SearchBar";
+import { Tender, ApiContract } from "@/types/tender";
 
 interface EmptyStateProps {
   title: string;
@@ -9,7 +10,7 @@ interface EmptyStateProps {
   imageSrc: string;
   showSearch?: boolean;
   actionRoute?: string;
-  onSearchResults?: (results: any[]) => void;
+  onSearchResults?: (results: Tender[]) => void;
   setLoading?: (loading: boolean) => void;
   setError?: (error: string | null) => void;
 }
@@ -27,13 +28,23 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   const router = useRouter();
 
+  const handleSearchResults = (results: ApiContract[]) => {
+    if (onSearchResults) {
+      const mappedTenders: Tender[] = results.map((tender) => ({
+        ...tender,
+        isLiked: tender.is_liked
+      }));
+      onSearchResults(mappedTenders);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center w-full min-h-screen">
       {showSearch && onSearchResults && setLoading && setError && (
         <section className="w-full bg-white border-t border-b border-solid border-y-zinc-300">
           <div className="p-6 max-md:px-5">
             <SearchBar 
-              onSearchResults={onSearchResults}
+              onSearchResults={handleSearchResults}
               setLoading={setLoading}
               setError={setError}
             />

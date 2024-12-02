@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { ApiContract } from "../../types/tender";
 
 interface SearchBarProps {
-  onSearchResults: (results: any[]) => void;
+  onSearchResults: (results: ApiContract[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 }

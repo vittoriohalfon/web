@@ -1,13 +1,10 @@
 const countryCodeToFlagPath = (countryCode: string): string => {
-    console.log("Input countryCode:", countryCode);
     
     if (!countryCode) {
-      console.log("Country code is null/undefined");
       return '/flags/eu.svg';
     }
   
     if (countryCode.trim() === '') {
-      console.log("Country code is empty or whitespace");
       return '/flags/eu.svg';
     }
   

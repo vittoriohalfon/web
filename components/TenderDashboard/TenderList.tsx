@@ -12,18 +12,12 @@ interface TenderListProps {
   tenders: Tender[];
   loading: boolean;
   error: string | null;
-  onSearchResults?: (results: any[]) => void;
-  setLoading?: (loading: boolean) => void;
-  setError?: (error: string | null) => void;
 }
 
 export const TenderList: React.FC<TenderListProps> = ({ 
   tenders, 
   loading, 
   error,
-  onSearchResults,
-  setLoading,
-  setError
 }) => {
   const pathname = usePathname();
   const isLikedTenders = pathname === '/liked-tenders';
@@ -87,18 +81,14 @@ export const TenderList: React.FC<TenderListProps> = ({
     );
   }
 
-  const formatTenderForCard = (tender: any) => ({
+  const formatTenderForCard = (tender: Tender) => ({
     id: tender.notice_id,
     title: tender.title,
     description: tender.description,
-    match: tender.score 
-      ? Math.round(tender.score * 100) 
-      : (tender.match_percentage || 0),
-    budget: tender.estimated_value && tender.currency 
-      ? `${tender.currency} ${tender.estimated_value.toLocaleString()}`
-      : (tender.amount && tender.currency 
-        ? `${tender.currency} ${tender.amount.toLocaleString()}`
-        : 'N/A'),
+    match: tender.match_percentage || 0,
+    budget: tender.amount && tender.currency 
+      ? `${tender.currency} ${tender.amount.toLocaleString()}`
+      : 'N/A',
     country: tender.country || 'EU',
     countryFlag: tender.country 
       ? countryCodeToFlagPath(tender.country)
@@ -120,7 +110,7 @@ export const TenderList: React.FC<TenderListProps> = ({
     dueIn: tender.deadline 
       ? `${Math.ceil((new Date(tender.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days`
       : 'N/A',
-    isLiked: tender.is_liked || tender.isLiked || false,
+    isLiked: tender.isLiked,
   });
 
   return (

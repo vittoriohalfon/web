@@ -6,7 +6,7 @@ import { Sidebar } from "../shared/Sidebar";
 import { SearchBar } from "./SearchBar";
 import { TenderList } from "./TenderList";
 import { Header } from "../shared/Header";
-import { Tender } from "@/types/tender";
+import { Tender, ApiContract } from "@/types/tender";
 import { usePathname } from 'next/navigation';
 
 interface TenderDashboardProps {
@@ -28,13 +28,12 @@ export const TenderDashboard: React.FC<TenderDashboardProps> = ({
 }) => {
   const pathname = usePathname();
   const isDashboard = pathname === '/dashboard';
-  const isLikedTenders = pathname === '/liked-tenders';
   const [localTenders, setLocalTenders] = useState<Tender[]>(propTenders || initialTenders);
   const [isSearching, setIsSearching] = useState(false);
 
   // Default handlers if not provided
-  const handleSetLoading = setLoading || ((loading: boolean) => {});
-  const handleSetError = setError || ((error: string | null) => {});
+  const handleSetLoading = setLoading || (() => {});
+  const handleSetError = setError || (() => {});
 
   // Update tenders when initialTenders or propTenders changes
   useEffect(() => {
@@ -43,9 +42,9 @@ export const TenderDashboard: React.FC<TenderDashboardProps> = ({
     }
   }, [initialTenders, propTenders, isSearching]);
 
-  const handleSearchResults = (results: any[]) => {
+  const handleSearchResults = (results: ApiContract[]) => {
     setIsSearching(true);
-    const mappedTenders = results.map((tender: any) => ({
+    const mappedTenders: Tender[] = results.map((tender) => ({
       ...tender,
       isLiked: tender.is_liked
     }));
@@ -70,8 +69,6 @@ export const TenderDashboard: React.FC<TenderDashboardProps> = ({
           tenders={localTenders} 
           loading={loading} 
           error={error}
-          setLoading={handleSetLoading}
-          setError={handleSetError}
         />
       </main>
     </div>

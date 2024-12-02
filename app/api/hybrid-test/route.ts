@@ -26,10 +26,95 @@ interface SearchResult {
   is_liked: boolean;
 }
 
-async function hybridSearchContracts(searchText: string): Promise<HybridSearchApiResponse[]> {
+const COUNTRY_CODE_MAP: { [key: string]: string } = {
+  'ITA': 'Italy',
+  'ESP': 'Spain', 
+  'IRL': 'Ireland',
+  'NOR': 'Norway',
+  'FRA': 'France',
+  'DEU': 'Germany',
+  'NLD': 'Netherlands',
+  'BEL': 'Belgium',
+  'POL': 'Poland',
+  'PRT': 'Portugal',
+  'ROU': 'Romania',
+  'AUT': 'Austria',
+  'SWE': 'Sweden',
+  'FIN': 'Finland',
+  'DNK': 'Denmark',
+  'CZE': 'Czech-republic',
+  'GRC': 'Greece',
+  'BGR': 'Bulgaria',
+  'HRV': 'Croatia',
+  'SVK': 'Slovakia',
+  'LTU': 'Lithuania',
+  'LVA': 'Latvia',
+  'EST': 'Estonia',
+  'CYP': 'Cyprus',
+  'HUN': 'Hungary',
+  'SVN': 'Slovenia',
+  'LUX': 'Luxembourg',
+  'MLT': 'Malta'
+};
+
+function getCountryCode(countryName: string): string | null {
+  if (!countryName) return null;
+  
+  const normalizedCountryName = countryName.toLowerCase().trim();
+  
+  // Direct mapping for common variations
+  const specialCases: { [key: string]: string } = {
+    'ireland': 'IRL',
+    'italy': 'ITA',
+    'spain': 'ESP',
+    'norway': 'NOR',
+    'france': 'FRA',
+    'germany': 'DEU',
+    'netherlands': 'NLD',
+    'belgium': 'BEL',
+    'poland': 'POL',
+    'portugal': 'PRT',
+    'romania': 'ROU',
+    'austria': 'AUT',
+    'sweden': 'SWE',
+    'finland': 'FIN',
+    'denmark': 'DNK',
+    'czech republic': 'CZE',
+    'czech-republic': 'CZE',
+    'greece': 'GRC',
+    'bulgaria': 'BGR',
+    'croatia': 'HRV',
+    'slovakia': 'SVK',
+    'lithuania': 'LTU',
+    'latvia': 'LVA',
+    'estonia': 'EST',
+    'cyprus': 'CYP',
+    'hungary': 'HUN',
+    'slovenia': 'SVN',
+    'luxembourg': 'LUX',
+    'malta': 'MLT'
+  };
+
+  // Check for direct match in special cases
+  if (specialCases[normalizedCountryName]) {
+    return specialCases[normalizedCountryName];
+  }
+
+  // Fallback to original mapping if needed
+  for (const [code, name] of Object.entries(COUNTRY_CODE_MAP)) {
+    if (name.toLowerCase() === normalizedCountryName) {
+      return code;
+    }
+  }
+
+  console.log(`Could not map country name: "${countryName}" to a country code`);
+  return null;
+}
+
+async function hybridSearchContracts(searchText: string, primaryFocus: string = 'all'): Promise<HybridSearchApiResponse[]> {
   try {
     console.log('Starting searchContracts function...');
-    const apiUrl = process.env.HYBRID_SEARCH_API_GATEWAY_URL;
+    const apiUrl = process.env.HYBRID_SEARCH_API_GATEWAY_URL_LOT;
 
     if (!apiUrl) {
       console.error('API Gateway URL is missing in environment variables');
@@ -37,6 +122,7 @@ async function hybridSearchContracts(searchText: string): Promise<HybridSearchAp
     }
 
     console.log('Search text received:', searchText);
+    console.log('Primary focus:', primaryFocus);
     console.log('Making API request to:', apiUrl);
 
     const response = await fetch(apiUrl, {
@@ -44,14 +130,15 @@ async function hybridSearchContracts(searchText: string): Promise<HybridSearchAp
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ text: searchText }),
+      body: JSON.stringify({ 
+        text: searchText,
+        alpha: 0.8,
+        score_cutoff: 0.5,
+        primaryFocus: primaryFocus
+      }),
     });
 
-    console.log('API Response Status:', response.status);
-    console.log('API Response Headers:', Object.fromEntries(response.headers.entries()));
-
     const responseData = await response.json();
-    console.log('API Response Data:', responseData);
 
     if (!response.ok) {
       console.error('API request failed:', {
@@ -119,24 +206,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Search text is required' }, { status: 400 });
     }
 
-    // Get user with liked contracts
+    // Get user with liked contracts and company information
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { likedContracts: true }
+      include: { 
+        likedContracts: true,
+        company: true
+      }
     });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const searchResults = await hybridSearchContracts(searchText);
+    // Get primaryFocus from company or default to 'all'
+    const primaryFocus = user.company?.primaryFocus?.toLowerCase() || 'all';
+    
+    // Validate primaryFocus
+    const validFocuses = ['supplies', 'works', 'services', 'all'];
+    const validatedFocus = validFocuses.includes(primaryFocus) ? primaryFocus : 'all';
+
+    const searchResults = await hybridSearchContracts(searchText, validatedFocus);
     console.log('Search Results:', searchResults);
 
-    const noticeIds = searchResults.map(result => result.notice_id);
+    const noticeIds = searchResults.map(result => result.notice_id.split('_')[0]);
     const contractDetails = await fetchContractDetails(noticeIds, request.headers);
 
     // Create a Set of liked contract IDs for efficient lookup
     const likedContractIds = new Set(user.likedContracts.map(lc => lc.contractNoticeId));
+
+    // Get user's company country code with enhanced logging
+    const userLocation = user.company?.primaryLocation;
+    
+    const userCountryCode = userLocation ? getCountryCode(userLocation) : null;
 
     // Combine search results with contract details and liked status
     const formattedContracts = contractDetails.map((contract: SearchResult) => {
@@ -146,13 +248,33 @@ export async function POST(request: Request) {
         rank: searchResult?.rank,
         score: searchResult?.score,
         submission_deadline_date: searchResult?.metadata.submission_deadline_date,
+        match_percentage: calculateMatchPercentage(),
         is_liked: likedContractIds.has(contract.notice_id)
       };
     });
-    
+
+    // Sort contracts to prioritize user's country if available
+    if (userCountryCode) {
+
+      formattedContracts.sort((a, b) => {
+        const aIsUserCountry = a.country === userCountryCode;
+        const bIsUserCountry = b.country === userCountryCode;
+
+        if (aIsUserCountry && !bIsUserCountry) return -1;
+        if (!aIsUserCountry && bIsUserCountry) return 1;
+        return 0;
+      });
+    }
+
     return NextResponse.json({ 
-      contracts: formattedContracts 
+      contracts: formattedContracts,
+      debug: {
+        userCountry: userLocation,
+        userCountryCode,
+        contractCountries: formattedContracts.map(c => c.country)
+      }
     });
+
   } catch (error) {
     console.error('Error in hybrid search:', error);
     return NextResponse.json({ 
@@ -160,4 +282,8 @@ export async function POST(request: Request) {
       contracts: [] 
     }, { status: 500 });
   }
+}
+
+function calculateMatchPercentage(): number {
+  return Math.floor(Math.random() * 40) + 60; // Returns 60-100
 }

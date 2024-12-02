@@ -25,7 +25,7 @@ export async function PUT(request: Request) {
       data: {
         name: data.companyName,
         annualTurnover: data.turnover,
-        primaryLocation: data.location,
+        primaryLocation: data.primaryLocation || data.location,
         experienceWithTenders: data.experienceWithTenders,
         industrySector: data.industrySector,
         companyOverview: data.companyOverview,
