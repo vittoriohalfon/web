@@ -3,21 +3,12 @@ import '@/app/globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import localFont from 'next/font/local';
 import type { Metadata } from 'next';
-import Hotjar from '@hotjar/browser';
+import HotjarProvider from '../components/HotjarProvider';
 
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
-});
-
-// Initialize Hotjar
-const hotjarSiteId = 5228160;
-const hotjarVersion = 6;
-
-// Only initialize Hotjar if not in development
-Hotjar.init(hotjarSiteId, hotjarVersion, {
-  debug: true
 });
 
 export const metadata: Metadata = {
@@ -48,6 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <ClerkProvider dynamic>
         <body className={`min-h-screen bg-gray-50 ${geistMono.variable} antialiased`}>
+          <HotjarProvider />
           {children}
         </body>
       </ClerkProvider>
