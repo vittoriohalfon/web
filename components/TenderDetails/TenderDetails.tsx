@@ -74,6 +74,8 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [isSummaryRequested, setIsSummaryRequested] = useState(false);
+  const [isSummaryLoading, setIsSummaryLoading] = useState(false);
 
   React.useEffect(() => {
     const fetchTenderData = async () => {
@@ -86,7 +88,7 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
           },
           body: JSON.stringify({ 
             noticeId: tenderId,
-            match_percentage: match_percentage 
+            match_percentage: match_percentage
           }),
         });
 
@@ -151,6 +153,35 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
       console.error('Error updating tender like status:', error);
     } finally {
       setIsLikeLoading(false);
+    }
+  };
+
+  const handleRequestSummary = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isSummaryLoading) return;
+    
+    setIsSummaryLoading(true);
+    
+    try {
+      const response = await fetch('/api/request-summary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tenderId: tenderId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to request summary');
+      }
+
+      setIsSummaryRequested(true);
+    } catch (error) {
+      console.error('Error requesting summary:', error);
+    } finally {
+      setIsSummaryLoading(false);
     }
   };
 
@@ -417,6 +448,22 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
                   </div>
                 ))}
               </div>
+            </section>
+
+            <section className="flex justify-center my-12">
+              <button
+                onClick={handleRequestSummary}
+                disabled={isSummaryLoading || isSummaryRequested}
+                className={`flex gap-1.5 justify-center items-center px-6 py-2.5 font-semibold text-center whitespace-nowrap rounded-lg border border-solid transition-colors ${
+                  isSummaryRequested 
+                    ? 'text-white bg-indigo-700 border-indigo-700' 
+                    : 'text-indigo-700 bg-white border-indigo-700 hover:bg-indigo-50'
+                }`}
+              >
+                <span className="self-stretch my-auto text-base">
+                  {isSummaryLoading ? '...' : (isSummaryRequested ? 'Summary Requested' : 'Generate Summary Report')}
+                </span>
+              </button>
             </section>
           </div>
         </div>

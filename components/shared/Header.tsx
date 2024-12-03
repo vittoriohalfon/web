@@ -10,7 +10,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }) => {
-  const TRIAL_PERIOD_DAYS = 14;
+  const TRIAL_PERIOD_DAYS = 30;
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
   const remainingDays = calculateRemainingDays();
 
   if (loading) {
-    return <header />; // Or a loading spinner
+    return <header />;
   }
 
   return (
