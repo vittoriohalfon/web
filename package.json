@@ -19,6 +19,7 @@
     "@builder.io/sdk": "^4.0.3",
     "@clerk/nextjs": "^6.3.4",
     "@hotjar/browser": "^1.0.9",
+    "@intercom/messenger-js-sdk": "^0.0.14",
     "@prisma/client": "^5.22.0",
     "@types/pg": "^8.11.10",
     "aws-amplify": "^6.10.0",

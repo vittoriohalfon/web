@@ -49,8 +49,8 @@ export async function POST() {
         },
       ],
       mode: "subscription",
-      success_url: `${DOMAIN}/dashboard?success=true`,
-      cancel_url: `${DOMAIN}/dashboard?canceled=true`,
+      success_url: `${DOMAIN}/home?success=true`,
+      cancel_url: `${DOMAIN}/home?canceled=true`,
       metadata: {
         userId: user.id.toString(),
       },

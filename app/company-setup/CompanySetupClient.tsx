@@ -28,7 +28,7 @@ export default function CompanySetupClient() {
   };
 
   const handleComplete = () => {
-    router.push('/dashboard');
+    router.push('/home');
   };
 
   const handleFileUpload = async () => {

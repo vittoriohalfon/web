@@ -17,7 +17,7 @@ export default async function OnboardingPage() {
   });
 
   if (dbUser?.setupComplete) {
-    redirect('/dashboard');
+    redirect('/home');
   }
 
   return <CompanySetupClient />;

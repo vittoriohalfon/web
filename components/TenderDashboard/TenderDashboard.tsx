@@ -27,7 +27,7 @@ export const TenderDashboard: React.FC<TenderDashboardProps> = ({
   setError 
 }) => {
   const pathname = usePathname();
-  const isDashboard = pathname === '/dashboard';
+  const isDashboard = pathname === '/home';
   const [localTenders, setLocalTenders] = useState<Tender[]>(propTenders || initialTenders);
   const [isSearching, setIsSearching] = useState(false);
 

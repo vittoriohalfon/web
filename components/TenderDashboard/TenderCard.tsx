@@ -80,7 +80,7 @@ export const TenderCard: React.FC<TenderCardProps> = ({ tender }) => {
 
   return (
     <Link
-      href={`/dashboard/${tender.id}?match=${tender.match}`}
+      href={`/home/${tender.id}?match=${tender.match}`}
       className="block"
     >
       <div className="flex flex-col gap-4 p-6 w-full bg-white rounded-lg border border-solid shadow-sm border-zinc-300 max-md:px-5 max-md:max-w-full hover:shadow-md transition-shadow">

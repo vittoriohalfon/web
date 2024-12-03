@@ -20,8 +20,8 @@ export const TenderList: React.FC<TenderListProps> = ({
   error,
 }) => {
   const pathname = usePathname();
-  const isLikedTenders = pathname === '/liked-tenders';
-  const isDashboard = pathname === '/dashboard';
+  const isLikedTenders = pathname === '/my-tenders';
+  const isDashboard = pathname === '/home';
 
   if (loading) {
     return (
@@ -56,7 +56,7 @@ export const TenderList: React.FC<TenderListProps> = ({
         actionLabel="Start Search"
         imageSrc="/logo-white.svg"
         showSearch={false}
-        actionRoute="/dashboard"
+        actionRoute="/home"
       />
     );
   }

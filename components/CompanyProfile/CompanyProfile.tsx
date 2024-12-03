@@ -109,7 +109,7 @@ export const CompanyProfile: React.FC = () => {
       setSaved(true);
 
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/home");
       }, 1000);
     } catch (err) {
       setError("Failed to save profile");

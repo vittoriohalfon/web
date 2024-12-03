@@ -21,7 +21,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionLabel,
   imageSrc,
   showSearch = false,
-  actionRoute = '/dashboard',
+  actionRoute = '/home',
   onSearchResults,
   setLoading,
   setError
