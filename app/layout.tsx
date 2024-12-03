@@ -16,9 +16,9 @@ const hotjarSiteId = 5228160;
 const hotjarVersion = 6;
 
 // Only initialize Hotjar if not in development
-if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'development') {
-  Hotjar.init(hotjarSiteId, hotjarVersion);
-}
+Hotjar.init(hotjarSiteId, hotjarVersion, {
+  debug: true
+});
 
 export const metadata: Metadata = {
   title: "Skim Application",
