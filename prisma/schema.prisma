@@ -77,4 +77,6 @@ model LikedContract {
   userId           Int
   contractNoticeId String
   likedAt          DateTime @default(now())
+  requestedSummary Boolean  @default(false)
+  @@unique([userId, contractNoticeId])
 }

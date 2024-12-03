@@ -177,6 +177,22 @@ export const TenderDetails: React.FC<TenderDetailsProps> = ({
         throw new Error('Failed to request summary');
       }
 
+      if (!isLiked) {
+        const likeResponse = await fetch('/api/like-tender', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contractNoticeId: tenderId,
+          }),
+        });
+
+        if (likeResponse.ok) {
+          setIsLiked(true);
+        }
+      }
+
       setIsSummaryRequested(true);
     } catch (error) {
       console.error('Error requesting summary:', error);

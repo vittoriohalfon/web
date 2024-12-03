@@ -1,5 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 interface RequestData {
   tenderId: string;
@@ -26,6 +27,33 @@ export async function POST(req: Request) {
     const clerkId = clerkUser.id;
     const userName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
     const userEmail = clerkUser.emailAddresses[0]?.emailAddress || '';
+
+    // Get the user from the database
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Create or update the liked contract record
+    await prisma.likedContract.upsert({
+      where: {
+        userId_contractNoticeId: {
+          userId: user.id,
+          contractNoticeId: tenderId,
+        },
+      },
+      create: {
+        userId: user.id,
+        contractNoticeId: tenderId,
+        requestedSummary: true,
+      },
+      update: {
+        requestedSummary: true,
+      },
+    });
 
     // Send request to Make webhook
     const webhookUrl = process.env.MAKE_WEBHOOK_URL;
