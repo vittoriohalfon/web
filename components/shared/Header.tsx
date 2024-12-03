@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
       }
 
       const data = await response.json();
-      window.open(data.url, 'noopener,noreferrer');
+      window.location.href = data.url;
     } catch (error) {
       console.error("Payment error:", error);
     }
@@ -79,11 +79,11 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
             left of your free trial!
           </div>
           <a 
-            onClick={handleUpgradeClick}
+            onClick={(e) => {
+              e.preventDefault();
+              handleUpgradeClick();
+            }}
             className="gap-2 self-stretch my-auto underline decoration-auto decoration-solid underline-offset-auto cursor-pointer hover:text-indigo-800"
-            target="_blank"
-            rel="noopener noreferrer"
-            href="#"
           >
             Upgrade here
           </a>
