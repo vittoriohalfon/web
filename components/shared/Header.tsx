@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ userCreatedAt, showNav = false }
       }
 
       const data = await response.json();
-      window.open(data.url, '_blank', 'noopener,noreferrer');
+      window.open(data.url, 'noopener,noreferrer');
     } catch (error) {
       console.error("Payment error:", error);
     }

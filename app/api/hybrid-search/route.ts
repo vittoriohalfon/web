@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { Company } from '@prisma/client';
 
 const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+interface HybridSearchApiResponse {
+  rank: number;
+  notice_id: string;
+  score: number;
+  metadata: {
+    submission_deadline_date: string;
+  };
+}
 
 interface SearchResult {
   notice_id: string;
@@ -18,57 +26,114 @@ interface SearchResult {
   is_liked: boolean;
 }
 
-interface HybridSearchApiResponse {
-  record_id: string;
+const COUNTRY_CODE_MAP: { [key: string]: string } = {
+  'ITA': 'Italy',
+  'ESP': 'Spain', 
+  'IRL': 'Ireland',
+  'NOR': 'Norway',
+  'FRA': 'France',
+  'DEU': 'Germany',
+  'NLD': 'Netherlands',
+  'BEL': 'Belgium',
+  'POL': 'Poland',
+  'PRT': 'Portugal',
+  'ROU': 'Romania',
+  'AUT': 'Austria',
+  'SWE': 'Sweden',
+  'FIN': 'Finland',
+  'DNK': 'Denmark',
+  'CZE': 'Czech-republic',
+  'GRC': 'Greece',
+  'BGR': 'Bulgaria',
+  'HRV': 'Croatia',
+  'SVK': 'Slovakia',
+  'LTU': 'Lithuania',
+  'LVA': 'Latvia',
+  'EST': 'Estonia',
+  'CYP': 'Cyprus',
+  'HUN': 'Hungary',
+  'SVN': 'Slovenia',
+  'LUX': 'Luxembourg',
+  'MLT': 'Malta'
+};
+
+function getCountryCode(countryName: string): string | null {
+  if (!countryName) return null;
+  
+  const normalizedCountryName = countryName.toLowerCase().trim();
+  
+  // Direct mapping for common variations
+  const specialCases: { [key: string]: string } = {
+    'ireland': 'IRL',
+    'italy': 'ITA',
+    'spain': 'ESP',
+    'norway': 'NOR',
+    'france': 'FRA',
+    'germany': 'DEU',
+    'netherlands': 'NLD',
+    'belgium': 'BEL',
+    'poland': 'POL',
+    'portugal': 'PRT',
+    'romania': 'ROU',
+    'austria': 'AUT',
+    'sweden': 'SWE',
+    'finland': 'FIN',
+    'denmark': 'DNK',
+    'czech republic': 'CZE',
+    'czech-republic': 'CZE',
+    'greece': 'GRC',
+    'bulgaria': 'BGR',
+    'croatia': 'HRV',
+    'slovakia': 'SVK',
+    'lithuania': 'LTU',
+    'latvia': 'LVA',
+    'estonia': 'EST',
+    'cyprus': 'CYP',
+    'hungary': 'HUN',
+    'slovenia': 'SVN',
+    'luxembourg': 'LUX',
+    'malta': 'MLT'
+  };
+
+  // Check for direct match in special cases
+  if (specialCases[normalizedCountryName]) {
+    return specialCases[normalizedCountryName];
+  }
+
+  // Fallback to original mapping if needed
+  for (const [code, name] of Object.entries(COUNTRY_CODE_MAP)) {
+    if (name.toLowerCase() === normalizedCountryName) {
+      return code;
+    }
+  }
+
+  console.log(`Could not map country name: "${countryName}" to a country code`);
+  return null;
 }
 
-async function hybridSearchContracts(user: { company: Company | null }): Promise<HybridSearchApiResponse[]> {
+async function hybridSearchContracts(searchText: string, primaryFocus: string = 'all'): Promise<HybridSearchApiResponse[]> {
   try {
-    const apiUrl = process.env.HYBRID_SEARCH_API_GATEWAY_URL;
+    const apiUrl = process.env.HYBRID_SEARCH_API_GATEWAY_URL_LOT;
 
     if (!apiUrl) {
       console.error('API Gateway URL is missing in environment variables');
       throw new Error('API Gateway URL is not defined');
     }
 
-    if (!user.company) {
-      console.error('User company data is missing:', user);
-      throw new Error('Company profile not found');
-    }
-
-    // Construct search text with logging
-    console.log('Company data:', {
-      sector: user.company.industrySector,
-      products: user.company.coreProductsServices,
-      usp: user.company.uniqueSellingPoint,
-      geo: user.company.geographicFocus
-    });
-
-    const searchText = [
-      user.company.industrySector && `Industry: ${user.company.industrySector}.`,
-      user.company.coreProductsServices && `Products/Services: ${user.company.coreProductsServices}.`,
-      user.company.uniqueSellingPoint && `Specialization: ${user.company.uniqueSellingPoint}.`,
-      user.company.geographicFocus && `Location: ${user.company.geographicFocus}.`,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .slice(0, 1000);
-
-    console.log('Constructed search text:', searchText);
-
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ text: searchText }),
+      body: JSON.stringify({ 
+        text: searchText,
+        alpha: 0.8,
+        score_cutoff: 0.5,
+        primaryFocus: primaryFocus
+      }),
     });
 
-    console.log('API Response Status:', response.status);
-    console.log('API Response Headers:', Object.fromEntries(response.headers.entries()));
-
     const responseData = await response.json();
-    console.log('API Response Data:', responseData);
 
     if (!response.ok) {
       console.error('API request failed:', {
@@ -129,64 +194,88 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const headers = request.headers;
+    const body = await request.json();
+    const { searchText } = body;
 
+    if (!searchText) {
+      return NextResponse.json({ error: 'Search text is required' }, { status: 400 });
+    }
+
+    // Get user with liked contracts and company information
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
       include: { 
-        company: true,
-        likedContracts: true 
-      },
+        likedContracts: true,
+        company: true
+      }
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const searchResults = await hybridSearchContracts(user);
-    const noticeIds = searchResults.map((result) => 
-      result.record_id.split('_')[0]
-    );
-    const uniqueNoticeIds = [...new Set(noticeIds)];
+    // Get primaryFocus from company or default to 'all'
+    const primaryFocus = user.company?.primaryFocus?.toLowerCase() || 'all';
+    
+    // Validate primaryFocus
+    const validFocuses = ['supplies', 'works', 'services', 'all'];
+    const validatedFocus = validFocuses.includes(primaryFocus) ? primaryFocus : 'all';
 
+    const searchResults = await hybridSearchContracts(searchText, validatedFocus);
+
+    const noticeIds = searchResults.map(result => result.notice_id.split('_')[0]);
+    const contractDetails = await fetchContractDetails(noticeIds, request.headers);
+
+    // Create a Set of liked contract IDs for efficient lookup
     const likedContractIds = new Set(user.likedContracts.map(lc => lc.contractNoticeId));
 
-    const contractDetails = await fetchContractDetails(uniqueNoticeIds, headers);
+    // Get user's company country code with enhanced logging
+    const userLocation = user.company?.primaryLocation;
     
-    const formattedContracts = contractDetails.map((contract: SearchResult) => ({
-      notice_id: contract.notice_id,
-      title: contract.title,
-      description: contract.description,
-      amount: contract.estimated_value,
-      currency: contract.currency,
-      country: contract.country,
-      status: determineStatus(contract.estimated_value),
-      match_percentage: calculateMatchPercentage(),
-      published: contract.published,
-      lot_count: contract.lot_count,
-      deadline: contract.deadline,
-      is_liked: likedContractIds.has(contract.notice_id)
-    }));
+    const userCountryCode = userLocation ? getCountryCode(userLocation) : null;
 
-    console.log('Formatted Contracts:', formattedContracts);
-    
-    return NextResponse.json({
-      contracts: formattedContracts
+    // Combine search results with contract details and liked status
+    const formattedContracts = contractDetails.map((contract: SearchResult) => {
+      const searchResult = searchResults.find(sr => sr.notice_id === contract.notice_id);
+      return {
+        ...contract,
+        rank: searchResult?.rank,
+        score: searchResult?.score,
+        submission_deadline_date: searchResult?.metadata.submission_deadline_date,
+        match_percentage: calculateMatchPercentage(),
+        is_liked: likedContractIds.has(contract.notice_id)
+      };
     });
+
+    // Sort contracts to prioritize user's country if available
+    if (userCountryCode) {
+
+      formattedContracts.sort((a, b) => {
+        const aIsUserCountry = a.country === userCountryCode;
+        const bIsUserCountry = b.country === userCountryCode;
+
+        if (aIsUserCountry && !bIsUserCountry) return -1;
+        if (!aIsUserCountry && bIsUserCountry) return 1;
+        return 0;
+      });
+    }
+
+    return NextResponse.json({ 
+      contracts: formattedContracts,
+      debug: {
+        userCountry: userLocation,
+        userCountryCode,
+        contractCountries: formattedContracts.map(c => c.country)
+      }
+    });
+
   } catch (error) {
-    console.error('Error in similarity search:', error);
+    console.error('Error in hybrid search:', error);
     return NextResponse.json({ 
       error: 'Internal Server Error',
       contracts: [] 
     }, { status: 500 });
   }
-}
-
-// Helper functions
-function determineStatus(value: number): 'green' | 'yellow' | 'red' {
-  if (value > 1000000) return 'green';
-  if (value > 500000) return 'yellow';
-  return 'red';
 }
 
 function calculateMatchPercentage(): number {

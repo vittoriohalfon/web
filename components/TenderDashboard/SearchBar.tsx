@@ -20,7 +20,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearchResults, setLoadin
       setError(null);
       
       const sessionToken = await getToken();
-      const response = await fetch('/api/hybrid-test', {
+      const response = await fetch('/api/hybrid-search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
